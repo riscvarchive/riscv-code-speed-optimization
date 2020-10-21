@@ -1,0 +1,15 @@
+= RISC-V Code Speed Optimization SIG  =
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+This is the home of the RISC-V Code Speed Optimization SIG.  At present this has the status of a proposed SIG, with a candidate chair and co-chair, and a link:./charter.adoc[charter] in preparation.
+
+* Candidate Chair: Jeremy Bennett
+* Candidate Co-Chair: Wei Wu

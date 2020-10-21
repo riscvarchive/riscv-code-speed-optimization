@@ -1,0 +1,78 @@
+= RISC-V Code Speed Optimization SIG Charter  =
+RISC-V Foundation Compliance Task Group
+Issue 0.01 Draft
+:toc:
+:icons: font
+:numbered:
+:source-highlighter: rouge
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Overview
+
+This document is an initial version for discussion prepared by Jeremy Bennett (candidate chair) and Wei Wu (candidate co-chair).  It will be reviewed by the wider group in preparation for ratification by the Technical Steering Committee.
+
+== Scope
+
+The scope of the SIG is:
+
+* how to improve speed through ISA extensions
+* how to improve speed using the compilers and interpreters
+* how to improve speed using libraries
+
+The remit explicitly excludes consideration of hardware implementation strategies to keep the scope of the SIG to a reasonable size. Hardware implementation strategy is a big enough subject to deserve its own SIG.
+
+As a SIG, our role is to bring forward ideas and proposals. We will prepare these for our parent body, the Toolchain and Runtimes sub-committee. Any proposal that is accepted would then lead to a task group being created to bring the project to completion, and we would provide oversight of the task group's work.
+
+I believe the types of proposals we might create are.
+
+1. Areas where research is needed. For example we might want to explore whether an optimizing linker (beyond conventional relaxation) would be beneficial for RISC-V.  We would scope the research and specify its goals and outcomes. The outcomes could then lead to us specifying a new development task.
+
+2. Areas where development is needed. For example creation of hand-optimized emulation, standard C and standard math libraries.  In this case we would provide an outline Request for Quotation (RFQ) specifying the deliverables. This may be a follow-on from earlier commissioned research.
+
+3. Areas where processes need creating or improving. I have given an example of a process to establish vendor specific relocations, in order that we can have vendor specific tool chains that are consistent.
+
+For things that are of modest scope and generally of value the work might be commissioned by RISC-V International. However for larger projects we might have an additional role, which is to help formation of industry consortia to commission the work. An example of this might be delivery of optimizing Fortran compiler support in GCC and/or LLVM, something that is critical to the small number of RISC-V International members who are in the HPC space, and which represents tens of engineer years of work over an extended period.
+
+Some of thes areas overlap with other groups, notably the Code Size Reduction SIG (compiler and library issues) and the Runtimes SIG (interpreted and JITable languages). We shall communicate regularly with these groups, and agree who will lead on any overlapping issues.
+
+== Goals
+
+These provide the overarching framework within which we operate.
+
+1. To increase the execution speed of programs running on RISC-V hardware from the smallest microcontroller to the largest HPC systems.
+
+2. To support the development of a thriving commercial ecosystem for RISC-V technology which enhances code speed, both open source and proprietary.
+
+3. To see any open source code speed technologies from this group incorporated and maintained in their upstream projects
+
+The second of these is particularly important. The task is too big to be done just by RISC-V International, so we must ensure commercial players find it worth their while to be committed.
+
+These goals then lead to some metrics
+
+1. Benchmark speeds. We will need to define what benchmarks are appropriate, and since we are looking at systems of all sizes, we shall certainly need many benchmarks.
+
+2. Number of companies offering RISC-V products and services within the remit of this SIG
+
+3. Number of projects originating from this SIG which have been incorporated upstream.
+
+== Document history
+[cols="<1,<2,<3,<4",options="header,pagewidth",]
+|================================================================================
+| _Revision_ | _Date_            | _Author_ | _Modification_
+| 0.01      | 19 October 2020  |
+
+Jeremy Bennett,
+Wei Wu |
+
+Initial version for discussion.
+
+|================================================================================
+
