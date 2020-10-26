@@ -1,0 +1,32 @@
+= RISC-V Code Speed Optimization Candidate Projects
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+Some of these may be handled by other groups. Please submit pull requests or issues to update this list.
+
+== Research
+
+- extension of optimization in the linker
+- machine learning in the compiler
+
+== Development
+
+- compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
+- machine learning outside the compiler
+- superoptimization
+
+== Process
+
+- FSF copyright assignment in RISC-V mirror repositories
+- allocation of vendor specific linker relocations
+- `-menable-experimental-extensions` option for GCC
+- ongoing benchmarking (and regressions in benchmarking), including competitive analysis
+- documentation, for example to facilitate writing a scheduler, what can be standardize/parameterized, what are the "hints" in RISC-V documentation
+- buildbot infrastructure for open source CI and measurement

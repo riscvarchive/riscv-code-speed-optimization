@@ -1,3 +1,5 @@
 # Generated docs
 *.pdf
 *.html
+# Editor backup
+*~

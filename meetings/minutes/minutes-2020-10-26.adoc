@@ -1,0 +1,92 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Minutes =
+Monday 26 October 2020, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Summary of actions
+
+- *Mark Himelstein* to advise how to access the free advertising for the commercial ecosystem
+- *Jeremy Bennett* to collect comments on the charter and prepare an updated version for the next weeting.
+- *Jeremy Bennett* to create the candidate project list in GitHub, so it can be updated by pull request and issue submission.
+- *ACTION:* Jim Wilson to provide his list of GCC improvements
+
+== Review of actions
+
+First meeting, so none!
+
+== Welcome
+
+Mark Himelstein, CTO RISC-V International introduced the context for the group.
+
+Wei Wu: Candidate Co-chair, Head of PLCT, Chinese Academy of Sciences Institute of Software. Contributing to compilers, emulators and virtual machines.
+
+Jeremy Bennett: Candidate Chair, Chief Executive of Embecosm. Developer of open source compiler tool chains, processor models, operating systems and AI/ML.
+
+== Review the charter
+
+Mark Himelstein, encouraged the group to develop best practice for hardware, even though actually hardware is excluded.
+
+Mark Himelstein is establishing cross-group forums. He also noted that RISC-V has free advertising for ecosystem. Reach out to ISVs
+
+*ACTION:* Mark Himelstein to advise how to access the free advertising.
+
+Paolo Savini - metrics may overlap with other groups. Benchmarks for code size may also be useful for code speed.
+
+*ACTION:* Jeremy Bennett to collect comments on the charter and prepare an updated version for the next weeting.
+
+== Project development process
+
+Mark Himelstein noted that the definition of done is a commmuity effort and subject to continuous improvement. Please suggest improvements from our group.
+
+== List of candidate projects
+
+Some of these may be in other groups.
+
+*ACTION:* Jeremy Bennett to create the candidate project list in GitHub, so it can be updated by pull request and issue submission.
+
+=== Research
+
+- extension of optimization in the linker
+- machine learning in the compiler
+
+=== Development
+
+- compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
+- machine learning outside the compiler
+- superoptimization
+
+*ACTION:* Jim Wilson to provide his list of GCC improvements
+
+=== Process
+
+- FSF copyright assignment in RISC-V mirror repositories
+- allocation of vendor specific linker relocations
+- `-menable-experimental-extensions` option for GCC
+- ongoing benchmarking (and regressions in benchmarking), including competitive analysis
+- documentation, for example to facilitate writing a scheduler, what can be standardize/parameterized, what are the "hints" in RISC-V documentation
+- buildbot infrastructure for open source CI and measurement
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+- Monday 16 November 2020
+- Monday 7 December 2020
+- Thereafter first Monday of the month throughout 2021
+
+Mark Himelstein noted we can have more meetings if we need to.
+
+== AOB
+
+None.
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair

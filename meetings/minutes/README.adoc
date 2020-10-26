@@ -1,0 +1,12 @@
+= RISC-V Code Speed Optimization SIG Meetings =
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+This directory holds the Asciidoc source of meeting minutes, agendas and othe rmaterial. However the definitive location for all meeting minutes is the PDF held on the https://drive.google.com/drive/folders/1iSOCGbMp5bWYVvgs5GkeHmmHFS9y0jp1[Code Speed Optimization SIG Google Drive].
