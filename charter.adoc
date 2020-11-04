@@ -16,7 +16,7 @@ Document conventions:
 
 == Overview
 
-This document is a draft for review pending final approval by the SIG membership at its meeting on 19 November 2020.  It will then be submitted for ratification by the Technical Steering Committee.
+This document is a draft for review pending final approval by the SIG membership at its meeting on 16 November 2020.  It will then be submitted for ratification by the Technical Steering Committee.
 
 == Scope
 
@@ -79,6 +79,6 @@ Initial version for discussion.
 
 Jeremy Bennett |
 
-Draft for review, incorporating comments from initial meeting and pending finalization on 19 November 2020.
+Draft for review, incorporating comments from initial meeting and pending finalization on 16 November 2020.
 
 |================================================================================
