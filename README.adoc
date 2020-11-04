@@ -9,7 +9,9 @@ Document conventions:
 - US spelling throughout.
 ////
 
-This is the home of the RISC-V Code Speed Optimization SIG.  At present this has the status of a proposed SIG, with a candidate chair and co-chair, and a link:./charter.adoc[charter] in preparation.
+This is the home of the RISC-V Code Speed Optimization SIG.  At present this has the status of a proposed SIG, with a candidate chair and co-chair, and a link:./charter.adoc[charter] in review.
+
+The SIG is developing a list of link:projects/candidate-projects.adoc[candidate projects] to pursue.  All are invited to submit pull requests to extend the list of candidate projects.
 
 * Candidate Chair: Jeremy Bennett
 * Candidate Co-Chair: Wei Wu
