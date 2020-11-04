@@ -1,0 +1,224 @@
+works for small testcase, but not for big ones, needs more work
+
+diff --git a/gcc/config/riscv/riscv.c b/gcc/config/riscv/riscv.c
+index 2a8f87d..195b7cc 100644
+--- a/gcc/config/riscv/riscv.c
++++ b/gcc/config/riscv/riscv.c
+@@ -3571,6 +3571,10 @@ riscv_adjust_libcall_cfi_prologue ()
+   /* Debug info for adjust sp.  */
+   adjust_sp_rtx = gen_add3_insn (stack_pointer_rtx,
+ 				 stack_pointer_rtx, GEN_INT (-saved_size));
++  /* This might be a pattern or an insn.  Extract the pattern if it is an
++     insn.  */
++  if (GET_CODE (adjust_sp_rtx) == INSN)
++    adjust_sp_rtx = PATTERN (adjust_sp_rtx);
+   dwarf = alloc_reg_note (REG_CFA_ADJUST_CFA, adjust_sp_rtx,
+ 			  dwarf);
+   return dwarf;
+@@ -3679,6 +3683,10 @@ riscv_adjust_libcall_cfi_epilogue ()
+   /* Debug info for adjust sp.  */
+   adjust_sp_rtx = gen_add3_insn (stack_pointer_rtx,
+ 				 stack_pointer_rtx, GEN_INT (saved_size));
++  /* This might be a pattern or an insn.  Extract the pattern if it is an
++     insn.  */
++  if (GET_CODE (adjust_sp_rtx) == INSN)
++    adjust_sp_rtx = PATTERN (adjust_sp_rtx);
+   dwarf = alloc_reg_note (REG_CFA_ADJUST_CFA, adjust_sp_rtx,
+ 			  dwarf);
+ 
+diff --git a/gcc/config/riscv/riscv.md b/gcc/config/riscv/riscv.md
+index 9d22273..3a58d1e 100644
+--- a/gcc/config/riscv/riscv.md
++++ b/gcc/config/riscv/riscv.md
+@@ -409,7 +409,22 @@
+   [(set_attr "type" "fadd")
+    (set_attr "mode" "<UNITMODE>")])
+ 
+-(define_insn "addsi3"
++(define_expand "addsi3"
++  [(set (match_operand:SI          0 "register_operand")
++	(plus:SI (match_operand:SI 1 "register_operand")
++		 (match_operand:SI 2 "arith_operand")))]
++  ""
++{
++  if (TARGET_64BIT)
++    {
++      rtx tmp = gen_reg_rtx (DImode);
++      emit_insn (gen_addsi3_extended (tmp, operands[1], operands[2]));
++      emit_move_insn (operands[0], gen_lowpart (SImode, tmp));
++      DONE;
++    }
++})
++
++(define_insn "*addsi3"
+   [(set (match_operand:SI          0 "register_operand" "=r,r")
+ 	(plus:SI (match_operand:SI 1 "register_operand" " r,r")
+ 		 (match_operand:SI 2 "arith_operand"    " r,I")))]
+@@ -427,7 +442,7 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "DI")])
+ 
+-(define_insn "*addsi3_extended"
++(define_insn "addsi3_extended"
+   [(set (match_operand:DI               0 "register_operand" "=r,r")
+ 	(sign_extend:DI
+ 	     (plus:SI (match_operand:SI 1 "register_operand" " r,r")
+@@ -474,7 +489,22 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "DI")])
+ 
+-(define_insn "subsi3"
++(define_expand "subsi3"
++  [(set (match_operand:SI           0 "register_operand")
++	(minus:SI (match_operand:SI 1 "reg_or_0_operand")
++		  (match_operand:SI 2 "register_operand")))]
++  ""
++{
++  if (TARGET_64BIT)
++    {
++      rtx tmp = gen_reg_rtx (DImode);
++      emit_insn (gen_subsi3_extended (tmp, operands[1], operands[2]));
++      emit_move_insn (operands[0], gen_lowpart (SImode, tmp));
++      DONE;
++    }
++})
++
++(define_insn "*subsi3_internal"
+   [(set (match_operand:SI           0 "register_operand" "= r")
+ 	(minus:SI (match_operand:SI 1 "reg_or_0_operand" " rJ")
+ 		  (match_operand:SI 2 "register_operand" "  r")))]
+@@ -483,7 +513,7 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "SI")])
+ 
+-(define_insn "*subsi3_extended"
++(define_insn "subsi3_extended"
+   [(set (match_operand:DI               0 "register_operand" "= r")
+ 	(sign_extend:DI
+ 	    (minus:SI (match_operand:SI 1 "reg_or_0_operand" " rJ")
+@@ -521,7 +551,22 @@
+   [(set_attr "type" "fmul")
+    (set_attr "mode" "<UNITMODE>")])
+ 
+-(define_insn "mulsi3"
++(define_expand "mulsi3"
++  [(set (match_operand:SI          0 "register_operand")
++	(mult:SI (match_operand:SI 1 "register_operand")
++		 (match_operand:SI 2 "register_operand")))]
++  "TARGET_MUL"
++{
++  if (TARGET_64BIT)
++    {
++      rtx tmp = gen_reg_rtx (DImode);
++      emit_insn (gen_mulsi3_extended (tmp, operands[1], operands[2]));
++      emit_move_insn (operands[0], gen_lowpart (SImode, tmp));
++      DONE;
++    }
++})
++
++(define_insn "*mulsi3"
+   [(set (match_operand:SI          0 "register_operand" "=r")
+ 	(mult:SI (match_operand:SI 1 "register_operand" " r")
+ 		 (match_operand:SI 2 "register_operand" " r")))]
+@@ -539,7 +584,7 @@
+   [(set_attr "type" "imul")
+    (set_attr "mode" "DI")])
+ 
+-(define_insn "*mulsi3_extended"
++(define_insn "mulsi3_extended"
+   [(set (match_operand:DI              0 "register_operand" "=r")
+ 	(sign_extend:DI
+ 	    (mult:SI (match_operand:SI 1 "register_operand" " r")
+@@ -700,7 +745,22 @@
+ ;;  ....................
+ ;;
+ 
+-(define_insn "<optab>si3"
++(define_expand "<optab>si3"
++  [(set (match_operand:SI             0 "register_operand")
++	(any_div:SI (match_operand:SI 1 "register_operand")
++		    (match_operand:SI 2 "register_operand")))]
++  "TARGET_DIV"
++{
++  if (TARGET_64BIT)
++    {
++      rtx tmp = gen_reg_rtx (DImode);
++      emit_insn (gen_<optab>si3_extended (tmp, operands[1], operands[2]));
++      emit_move_insn (operands[0], gen_lowpart (SImode, tmp));
++      DONE;
++    }
++})
++
++(define_insn "*<optab>si3"
+   [(set (match_operand:SI             0 "register_operand" "=r")
+ 	(any_div:SI (match_operand:SI 1 "register_operand" " r")
+ 		    (match_operand:SI 2 "register_operand" " r")))]
+@@ -718,7 +778,7 @@
+   [(set_attr "type" "idiv")
+    (set_attr "mode" "DI")])
+ 
+-(define_insn "*<optab>si3_extended"
++(define_insn "<optab>si3_extended"
+   [(set (match_operand:DI                 0 "register_operand" "=r")
+ 	(sign_extend:DI
+ 	    (any_div:SI (match_operand:SI 1 "register_operand" " r")
+@@ -1488,7 +1548,23 @@
+ ;; expand_shift_1 can do this automatically when SHIFT_COUNT_TRUNCATED is
+ ;; defined, but use of that is discouraged.
+ 
+-(define_insn "<optab>si3"
++(define_expand "<optab>si3"
++  [(set (match_operand:SI     0 "register_operand")
++	(any_shift:SI
++	    (match_operand:SI 1 "register_operand")
++	    (match_operand:QI 2 "arith_operand")))]
++  ""
++{
++  if (TARGET_64BIT)
++    {
++      rtx tmp = gen_reg_rtx (DImode);
++      emit_insn (gen_<optab>si3_extend (tmp, operands[1], operands[2]));
++      emit_move_insn (operands[0], gen_lowpart (SImode, tmp));
++      DONE;
++    }
++})
++
++(define_insn "*<optab>si3_internal"
+   [(set (match_operand:SI     0 "register_operand" "= r")
+ 	(any_shift:SI
+ 	    (match_operand:SI 1 "register_operand" "  r")
+@@ -1599,7 +1675,7 @@
+   [(set_attr "type" "shift")
+    (set_attr "mode" "DI")])
+ 
+-(define_insn "*<optab>si3_extend"
++(define_insn "<optab>si3_extend"
+   [(set (match_operand:DI                   0 "register_operand" "= r")
+ 	(sign_extend:DI
+ 	    (any_shift:SI (match_operand:SI 1 "register_operand" "  r")
+@@ -1701,6 +1777,25 @@
+   [(set_attr "type" "shift")
+    (set_attr "mode" "SI")])
+ 
++;; Created by combine when a zero_extract is followed by a sign_extend.
++;; Should simplify sign_extend to a move, but meanwhile we can do this
++;; manually with a combiner pattern.
++(define_insn_and_split "*lshrsi3_zero_extend_4"
++  [(set (match_operand:DI                   0 "register_operand" "=r")
++	(zero_extract:DI (match_operand:DI  1 "register_operand" " r")
++			 (match_operand     2 "const_int_operand")
++			 (match_operand     3 "const_int_operand")))
++   (set (match_operand:DI                   4 "register_operand" "=r")
++	(zero_extract:DI (match_dup 1) (match_dup 2) (match_dup 3)))]
++  "(TARGET_64BIT && (INTVAL (operands[3]) > 0)
++    && (INTVAL (operands[2]) + INTVAL (operands[3]) == 32))"
++  "#"
++  ""
++  [(set (match_dup 0)
++  	(zero_extract:DI (match_dup 1) (match_dup 2) (match_dup 3)))
++   (set (match_dup 4) (match_dup 0))]
++  "")
++
+ ;;
+ ;;  ....................
+ ;;

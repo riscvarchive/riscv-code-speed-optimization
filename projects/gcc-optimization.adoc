@@ -1,0 +1,329 @@
+= Project proposal: GCC Optimization
+RISC-V International Code Speed Optimization SIG
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Introduction
+
+A set of 6 GCC RISC-V optimizations for speed proposed by Jim Wilson. Comments and feedback welcome via issues, pull requests (for corrections/clarifications) or the mailing list (for discussions).
+
+=== Exposing SImode operations to the RTL expanders for `any_bitwise` on RV64
+
+Problem noted by Philipp Tomsich
+
+[quote]
+----
+All attempts to model this, failed due to the bitwise operations being always expanded into DImode (usually with a paradoxical `(subreg:DI (reg:SI))`).
+
+Turns out that the (judging by the comment in the `.md`-file: intentional) absence of SImode RTL expansion is the root cause—and we need to allow SImode expansion for RV64, if we want to absorb the `sext.w` later during combine (or avoid it altogether in the first place).
+----
+
+Commments from Jim Wilson
+
+I think part of our trouble with sign extensions is due to the fact that the `riscv.md` file is lying about what instructions are available in rv64.  For instance, we have an `addsi3` pattern that claims that we can do `(set (reg:SI) (plus:SI (reg:SI) (reg:SI)))` but there is in fact no such instruction.  We only have `(set (reg:DI) (sign_extend:DI (plus:SI (reg:SI) (reg:SI)))`.  As an experiment once, I tried modifying the `addsi` pattern to emit `addsi3_extended` instead, putting the result in a temp reg, and then doing a subreg copy into the SImode target reg.  The idea here is that as part of the regular optimizations, the subreg should get folded into a following instruction, and in theory we end up with smaller faster code.  The same thing can be done with `sub`, `mul`, and `div`.  As part of this same patch, I changed the logical operations to work the same way.  When testing the patch, I sometimes got better code and sometimes got worse code.  I was hoping some day to take a look at this and try to improve it, but that hasn't happened yet.  I think I might be missing some combiner patterns necessary to avoid the performance/code size regressions.
+
+Also, once as an experiment, I tried writing a patch that added combiner patterns to match an add followed by a sign extend, and split it into a sign-extended add followed by a subreg.  Same theory here that further optimization should eliminate the subreg copy.  This one also sometimes helped and sometimes hurt.  I didn't do the logicals in this patch, just the arithmetics.  I never had time to finish this one either.
+
+I think the first patch is a better solution.  But it needs a lot more testing than I ever had time to do, and perhaps a few more combiner patterns to avoid regressions.
+
+I attached my patches so you can see what I was doing.  These are old patches so may not apply without changes.
+
+I have a bunch of other unfinished patches, but there was never anyone available to help me with them, or anyone I could talk to about them.  Maybe this can be brought up in the new code optimization task group.
+
+=== Files
+
+Patches:
+
+- link:gcc-files/opt-sign-extend.txt[]
+- link:gcc-files/opt-si-di-sext.txt[]
+
+== Optimizing `slt` expressions
+
+I think this is mostly done, except I haven't proven that all of the transformations are correct, and that they are optimal for rv32 and rv64.
+
+The testcase is trying to capture every possible edge condition with `slt` expressions.  The constant is zero.  The constant can fit in an slt immediate.  The constant can fit in a `lui`.  Etc.  And sometimes we need to add/subtract one to change the condition, so we need constants that are one off from each edge where the constant representation changes.  And we have signed and unsigned `slt` expressions.  We should also test int and long for rv64.  I don't think I have that test yet.
+
+The patch is trying to ensure the shortest possible code sequence for each `slt` expression.  As an example, consider this testcase
+
+[source,c]
+----
+int subgt_li (int i) { return i > 0xf00f; }
+----
+
+This currently generates
+[source,gas]
+----
+        li      a5,61440
+        addi    a5,a5,16
+        slt     a0,a0,a5
+        xori    a0,a0,1
+----
+
+It should instead generate
+[source,gas]
+----
+        li      a5,61440
+        addi    a5,a5,15
+        sgt     a0,a0,a5
+----
+
+which is one instruction shorter.  The compiler is inverting the comparison and adjusting the constant when it shouldn't.
+
+Here is another one
+[source,c]
+----
+int subgt_lui (int i) { return i > 0xffff0000; }
+----
+
+where the compiler emits
+
+[source,gas]
+----
+        li      a5,-65536
+        addi    a5,a5,1
+        sltu    a0,a0,a5
+        xori    a0,a0,1
+----
+
+and it should just be
+[source,gas]
+----
+        li      a5,-65536
+        sgtu    a0,a0,a5
+----
+
+=== Files
+
+Patch:
+
+- link:gcc-files/sli-opt.txt[]
+
+Test case:
+
+- link:gcc-files/sli-opt-testcase.c
+
+== Eliminate extra array adds
+
+This one was originally reported as RISC-V GNU tool chain repository https://github.com/riscv/riscv-gnu-toolchain/issues/126[issue #126].
+
+The idea here is that we want to fold a non-constant offset into an `lui`/`addi`/`lw` sequence to make it 3 instructions instead of 4.  So this converts
+[source,gas]
+----
+        lui     a5,%hi(array)
+        addi    a5,a5,%lo(array)
+        add     a0,a5,a0
+        lbu     a0,0(a0)
+----
+
+into
+[source,gas]
+----
+        lui     a5,%hi(array)
+        add     a0,a5,a0
+        lbu     a0,%lo(array)(a0)
+----
+
+where `a0` has a value to be added to the array address.
+
+I have a gcc patch, but it fails with linker relaxation.  If array is in range of the `gp`, then the `lui` gets deleted and we are left with
+[source,gas]
+----
+    add     a0,a5,a0
+    lbu     a0,-1640(gp)
+----
+
+which is wrong.  This should instead be
+[source,gas]
+----
+    add a0,gp,a0
+    lbu a0,-1640(a0)
+----
+
+So we need a new relocation, and we need binutils relaxation support to handle the new reloc and generate the desired code.
+
+`extra-array-add-patch.txt` is the original patch, and the bin/gcc patches are my incomplete attempt at fixing it
+
+=== Files
+
+Patches
+
+- link:gcc-files/extra-array-add-bin.txt
+- link:gcc-files/extra-array-add-gcc.txt
+- link:gcc-files/extra-array-add-patch.txt
+
+Test case
+
+- link:gcc-files/extra-array-add-testcase.txt
+
+== Large stack frame optimization problem
+
+This one was also mentioned in the code size task group, but I don't think it is useful there, as people who care about code size generally don't write code this way.
+
+If you have a stack frame larger than 4K (2K?) we get poor code generation for stack slot references.  The compiler generates FP+large constant, which requires lui/addi to load.  Then later we do frame pointer elimination which replaces FP with SP-large constant.  In theory the constants should cancel.  Unfortunately, CSE and other optimizations in between try to optimize the constant loads, sharing similar constants when multiple stack slot references, and then when we do FP elimination the code is so confused that we can't do the constant cancelation and we get an ugly mess.
+
+This isn't a RISC-V specific problem.  We just hit it sooner than other targets as pretty much everyone else has 16-bit constants, and hence needs a 64K (32K?) stack frame before they have a problem.  In theory, there is no problem if you have a 48-bit instruction to load a constant, such as Huawei has proposed in the code size task group, because that eliminates the constant cse that gets in the way.
+
+There is a good testcase for this in MI Bench which is the file `susan.c`.  There is also a bug report in RISC-V GCC repository  https://github.com/riscv/riscv-gcc/issues/193[issue #193]
+
+I have a prototype patch.  But I needed a change to a target independent optimization pass to make it work without regressions, and I don't have a good argument to justify that.  I also haven't tested it much.
+
+=== Files
+
+Patch
+
+- link:gcc-files/large-frame-hack.txt
+
+== `target` attribute and pragma
+
+The `target` attribute and `target` pragma is supported by the most popular targets, e.g. x86, arm, aarch64, powerpc, so should be supported by RISC-V also.  This is a quality of implementation issue.
+
+This allows one to specify target dependent options on a per function basis, e.g. you can compile one copy of a function with the B extension and one without, and then at run-time call the appropriate one depending on whether B extension support exists.
+
+This was requested somewhere, but I don't remember exactly where.  Probably either sw-dev or an issue in the riscv github tree somewhere.
+
+== Explicit relocations and `medany`
+
+This combination is off by default as it can result in bad code.
+
+Consider this testcase.
+[source,c]
+----
+int array[995] = { [10] 10, [99] 99 };
+long long ll = 100;
+
+long long
+sub (void)
+{
+  return ll;
+}
+
+int
+main (void)
+{
+  return sub ();
+}
+----
+
+If I use `riscv-gnu-toolchain`, configured for `rv32i` newlib, and compile it with `-O -mcmodel=medany -mexplicit-relocs`, in the assembly output I see
+
+[source,gas]
+----
+sub:
+.LA0:   auipc a5,%pcrel_hi(ll)
+        lw a0,%pcrel_lo(.LA0)(a5)
+        lw a1,%pcrel_lo(.LA0+4)(a5)
+        ret
+----
+
+which looks reasonable. Though maybe that should be `%pcrel_lo(.LA0)+4` instead, because the +4 is added to the address of `ll` not the address of `.LA0`. However, when I disassemble the `a.out` file, I see
+
+[source,gas]
+----
+000101ac <sub>:
+101ac: 00002797 auipc a5,0x2
+101b0: 7fc7a503 lw a0,2044(a5) # 129a8 <ll>
+101b4: 8007a583 lw a1,-2048(a5)
+101b8: 00008067 ret
+----
+
+and note that the +4 offset overflowed giving silent bad code.
+
+I carefully choose the array size to force the error. if you have a slightly different version or configuration of the tools, you might need a different array size to see the error.
+
+The problem here is that while the variable `ll` is 8-byte aligned, the `auipc` is not aligned, and `medany` is using the offset between the `auipc` and `ll`, so this offset is not a multiple of 8. The `auipc` is only guaranteed to have 4-byte alignment without the C extension, and 2 byte alignment with the C extension. GCC is assuming that any offset smaller than the alignment of the variable is safe, which is not true in this case.
+
+The same problem can happen for both rv32 and rv64 when using `long double` and `int128_t`, which requires 16-byte alignment. We don't have anything that requires more than 16-byte alignment though, so the problem ends here.
+
+Unfortunately, I don't see an obvious, easy, and good solution for this.
+
+We could disallow offsets with `pcrel_lo`, but that means `medany` code won't be as efficient as `medlow` because it will need extra address generation instructions.
+
+We could force alignment of `auipc`, but that means potentially emitting multiple nops before `auipc`, which again hurts `medany` code size and performance.
+
+We could maybe change the code sequence to something like
+[source,gas]
+----
+        aupic %pcrel_hi
+        addi %pcrel_addi
+        lw %pcrel_lo_with_addi
+        lw %pcrel_lo_with_addi+4
+----
+
+and then the new `pcrel_addi` reloc adds a value if necessary to avoid overflow, and the `pcrel_lo_with_addi` subtracts the same value. The `addi` can then be deleted via relaxation if it is unnecessary.  However, cleanly specifying and implementing these relocs could be a problem because of the complex interactions between them.
+
+Other solutions might involve defining a new code model, a new ABI, or adding new instructions to the ISA, all of which I'm hoping to avoid.
+
+While testing this support, I've also managed to find two binutils bugs that can result in link time errors when `pcrel_lo` is used with an offset. Though exactly how those should be fixed depends on how exactly we decide to fix the gcc problem. There is also the (third) linker problem of silently creating bad code when `pcrel_lo+offset` overflows. I can add an error for that, but if someone hits it, there isn't anything they can do to fix it, other than to recompile without `-mexplicit-relocs`.
+
+Meanwhile, with the gnu toolchain, use of `-mcmodel=medany` is safe, but use of both `-mcmodel=medany` and `-mexplicit-relocs` together is not safe.
+
+More discussion on the https://groups.google.com/a/groups.riscv.org/g/sw-dev/c/KnziiZtEJNo/m/M8Vfbw9UCgAJ[sw-dev mailing list].
+
+I added a linker check a while back, so you should get a linker error now instead of a silent error.  But we still can't enable it by default.  I don't know of any solution for the problem other than an ISA change or an ABI change, both of which are outside the scope of a gcc patch.  A number of solutions have been suggested, for instance emitting a 3 instruction sequence to align the auipc result, and then relax away the extra instruction when unnecessary, but we haven't figured out how to make any of them work.
+
+This is probably not a good project.
+
+== Subtracted shift count optimizations
+
+Consider this testcase
+[source,c]
+----
+unsigned foo(unsigned i0H, unsigned x0, unsigned q0) {
+  return (x0 << (64-q0)) | (i0H >> (q0-32));
+}
+----
+
+compiled with `-O2 -S` we get
+[source,gas]
+----
+li a5,64
+sub a5,a5,a2
+addi a2,a2,-32
+sll a1,a1,a5
+srl a0,a0,a2
+or a0,a1,a0
+ret
+----
+
+Ideally we should get something like this
+[source,gas]
+----
+foo:
+        neg     a5,a2
+        sll     a1,a1,a5
+        srl     a0,a0,a2
+        or      a0,a1,a0
+        ret
+----
+
+which takes advantage of the fact that shift counts are truncated.
+
+I haven't tried to fix this problem yet.
+
+We can get the good result if we define `SHIFT_COUNT_TRUNCATED`, but that is discouraged as it can cause problems.  With `SHIFT_COUNT_TRUNCATED`, `combine` will assume that all shift counts are truncated, even for instructions that you may not consider to be a shift like bitfield insert and extract, and vector instructions.  If any of these behave differently than a regular integer shift you can get bad code.
+
+There is a newer `TARGET_SHIFT_TRUNCATION_MASK` that might work better, as it allows you to specify a mode.  Hence it won't accidentally trigger for vector operations, but may still trigger for bitfield instructions.
+
+There is incidentally a discussion about the B extension where `sbextiw` works differently than `slliw` which could be a problem.
+
+Another solution is to add combiner patterns to try to match these constructs.  We already have combiner patterns that match a shift with the shift count anded against a mask.  We could add similar patterns to accept a shift with a shift count that has a constant added or subtracted from it when the constant is a multiple of the word size.  For a reverse subtract immediate, e.g. 32 - count, we emit a `neg` instruction for the shift count.  Though since this is trading 2 insns for 2 insns, I'm not sure if there is any benefit to this.
+
+== Document history
+
+[cols="<1,<2,<3,<4",options="header,pagewidth",]
+|================================================================================
+| _Revision_ | _Date_            | _Author_ | _Modification_
+| 0.01      | 26 October 2020  |
+
+Jim Wilson |
+
+Initial set of optimizations
+
+|================================================================================

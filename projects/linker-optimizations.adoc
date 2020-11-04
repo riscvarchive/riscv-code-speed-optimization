@@ -1,0 +1,116 @@
+= Project proposal: Linker Optimization
+RISC-V International Code Speed Optimization SIG
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Introduction
+
+For a number of scenarios, optimization of code is only possible once addresses have been resolved after linker relaxation and relocation.
+
+Consider a program in two source files. First link:linker-files/prog.c[prog.c]
+[source,c]
+----
+extern int  globvar1;
+extern int  globvar2;
+
+int
+main ()
+{
+  int z = globvar1 + globvar2;
+  return z;
+}
+----
+
+and a second file, link:linker-files/globvars.c[globvars.c], providing a definition of the two global variables:
+[source,c]
+----
+__attribute__((section(".data"))) int globvar1 = 42;
+__attribute__((section(".data"))) int globvar2 = 561;
+----
+
+For this example, we use the `section` attribute to prevent the variables ending up in small data accessible via the `gp` register (we want to treat their addresses as potentially large).
+
+We compile them with optimization to object, saving their intermediate assembly files for inspection and then link them:
+[source,bash]
+----
+riscv32-unknown-elf-gcc -O2 -save-temps -c prog.c
+riscv32-unknown-elf-gcc -O2 -save-temps -c globvars.c
+riscv32-unknown-elf-gcc -o demo prog.o globvars.o
+----
+
+If we disassemble the generated executable, we see an apparent missed optimization:
+[source,objdump]
+----
+riscv32-unknown-elf-objdump --disassemble=main demo
+
+demo:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00010074 <main>:
+   10074:	67c5                	lui	a5,0x11
+   10076:	3847a503          	lw	a0,900(a5) # 11384 <globvar1>
+   1007a:	67c5                	lui	a5,0x11
+   1007c:	3807a783          	lw	a5,896(a5) # 11380 <globvar2>
+   10080:	953e                	add	a0,a0,a5
+   10082:	8082                	ret
+----
+
+Why is `a5` reloaded - surely copy propagation followed by dead code elimination should have eliminated the second `lui a5,0x11`.  We can see why by looking at the object code from compiling `prog.c` in the file `prog.s`
+[source,gas]
+----
+main:
+	lui	a5,%hi(globvar1)
+	lw	a0,%lo(globvar1)(a5)
+	lui	a5,%hi(globvar2)
+	lw	a5,%lo(globvar2)(a5)
+	add	a0,a0,a5
+	ret
+----
+
+The compiler cannot see that `%hi(globvar1)` and  `%hi(globvar2)` are going to yield the same value because  `globvar1` and `globvar2` end up in the same 4KiB page.  This only becomes apparent once the final executable is linked.
+
+== Proposed solution
+
+The linker already provides some optimizations. The most obvious is relaxation, but in the case of RISC-V it also generates compressed instructions and makes some simplifying peephole like optimizations.
+
+To solve the problem described here, we need to extend the linker with some mainstream compiler optimizations that run in parallel with linker relaxation and relocation. The suggested initial set are
+- copy propagation
+- dead code elimination (DCE)
+
+The linker will need to know where to find basic blocks, but this information should be readily available, since it is created to support options like `-fprofile-arcs`.
+
+The major difference is that carrying out any optimization step potentially triggers a relaxation opportunity, causing addresses to change. This means that optimizations that have been already carried out may become invalid. Imagine for instance that in our example relaxation caused `globvar1` to slip into a different 4KiB page.  Thus the optimizations must allow backtracking.
+
+Backtracking in compilers is avoided where possible for efficiency, but is not unknown: for example SNOBOL4 pattern matching or Prolog resolution.  Thus this optimization will need to address the challenge of efficiency.
+
+There is one more challenge, which is the optimization will need to guarantee convergence. It must not be able to get into a cycle of optimization and backtracking that does not terminate.
+
+== Category of project
+
+This is a _research_ project.  Academic exploration is needed to understand whether a practical solution is feasible:
+
+- can backtracking versions of these optimizations be created?
+- what is the implication for linker performance of these optimizations?
+- can convergence be guaranteed?
+
+== Document history
+
+[cols="<1,<2,<3,<4",options="header,pagewidth",]
+|================================================================================
+| _Revision_ | _Date_            | _Author_ | _Modification_
+| 0.01      | 4 November 2020  |
+
+Jeremy Bennett |
+
+Problem description and outline proposal.
+
+|================================================================================

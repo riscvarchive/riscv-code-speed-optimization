@@ -1,0 +1,132 @@
+diff --git a/gcc/config/riscv/riscv.md b/gcc/config/riscv/riscv.md
+index 8b21c19..e5a2961 100644
+--- a/gcc/config/riscv/riscv.md
++++ b/gcc/config/riscv/riscv.md
+@@ -474,6 +474,32 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "SI")])
+ 
++;; This matches the combiner result for the insn pair
++;;   (set (reg:SI x) (plus:SI (reg:SI) (reg:SI)))
++;;   (set (reg:DI y) (sign_extend:DI (reg:SI x)))
++;; and converts it into
++;;   (set (reg:DI y) (sign_extend:DI (plus:SI (reg:SI) (reg:SI))))
++;;   (set (reg:SI x) (subreg:SI (reg:DI y)))
++;; The subreg can then be substituted into a following instruction, or perhaps
++;; eliminated by register allocation.
++
++(define_insn_and_split "*addsi3_extended3"
++  [(set (match_operand:DI               0 "register_operand" "=r,r")
++	(sign_extend:DI
++	 (plus:SI (match_operand:SI     1 "register_operand" " r,r")
++		  (match_operand:SI     2 "arith_operand"    " r,I"))))
++   (set (match_operand:SI               3 "register_operand" "=r,r")
++	(plus:SI (match_dup 1)
++		 (match_dup 2)))]
++  "TARGET_64BIT"
++  "#"
++  "&& 1"
++  [(set (match_dup 0) (sign_extend:DI (plus:SI (match_dup 1) (match_dup 2))))
++   (set (match_dup 3) (match_dup 4))]
++  "operands[4] = gen_lowpart (SImode, operands[0]);"
++  [(set_attr "type" "arith")
++   (set_attr "mode" "SI")])
++
+ ;;
+ ;;  ....................
+ ;;
+@@ -530,6 +556,23 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "SI")])
+ 
++(define_insn_and_split "*subsi3_extended3"
++  [(set (match_operand:DI               0 "register_operand" "= r")
++	(sign_extend:DI
++	 (minus:SI (match_operand:SI    1 "reg_or_0_operand" " rJ")
++		   (match_operand:SI    2 "register_operand" "  r"))))
++   (set (match_operand:SI               3 "register_operand" "= r")
++	(minus:SI (match_dup 1)
++		  (match_dup 2)))]
++  "TARGET_64BIT"
++  "#"
++  "&& 1"
++  [(set (match_dup 0) (sign_extend:DI (minus:SI (match_dup 1) (match_dup 2))))
++   (set (match_dup 3) (match_dup 4))]
++  "operands[4] = gen_lowpart (SImode, operands[0]);"
++  [(set_attr "type" "arith")
++   (set_attr "mode" "SI")])
++
+ (define_insn "negdi2"
+   [(set (match_operand:DI         0 "register_operand" "=r")
+ 	(neg:DI (match_operand:DI 1 "register_operand" " r")))]
+@@ -565,6 +608,21 @@
+   [(set_attr "type" "arith")
+    (set_attr "mode" "SI")])
+ 
++(define_insn_and_split "*negsi2_extended3"
++  [(set (match_operand:DI          0 "register_operand" "=r")
++	(sign_extend:DI
++	 (neg:SI (match_operand:SI 1 "register_operand" " r"))))
++   (set (match_operand:SI          2 "register_operand" "=r")
++	(neg:SI (match_dup 1)))]
++  "TARGET_64BIT"
++  "#"
++  "&& 1"
++  [(set (match_dup 0) (sign_extend:DI (neg:SI (match_dup 1))))
++   (set (match_dup 2) (match_dup 3))]
++  "operands[3] = gen_lowpart (SImode, operands[0]);"
++  [(set_attr "type" "arith")
++   (set_attr "mode" "SI")])
++
+ ;;
+ ;;  ....................
+ ;;
+@@ -621,6 +679,23 @@
+   [(set_attr "type" "imul")
+    (set_attr "mode" "SI")])
+ 
++(define_insn_and_split "*mulsi3_extended3"
++  [(set (match_operand:DI               0 "register_operand" "=r")
++	(sign_extend:DI
++	 (mult:SI (match_operand:SI     1 "register_operand" " r")
++		  (match_operand:SI     2 "register_operand" " r"))))
++   (set (match_operand:SI               3 "register_operand" "=r")
++	(mult:SI (match_dup 1)
++		 (match_dup 2)))]
++  "TARGET_64BIT"
++  "#"
++  "&& 1"
++  [(set (match_dup 0) (sign_extend:DI (mult:SI (match_dup 1) (match_dup 2))))
++   (set (match_dup 3) (match_dup 4))]
++  "operands[4] = gen_lowpart (SImode, operands[0]);"
++  [(set_attr "type" "imul")
++   (set_attr "mode" "SI")])
++
+ ;;
+ ;;  ........................
+ ;;
+@@ -789,6 +864,24 @@
+   [(set_attr "type" "idiv")
+    (set_attr "mode" "DI")])
+ 
++(define_insn_and_split "*<optab>si3_extended3"
++  [(set (match_operand:DI               0 "register_operand" "=r")
++	(sign_extend:DI
++	 (any_div:SI (match_operand:SI  1 "register_operand" " r")
++		     (match_operand:SI  2 "register_operand" " r"))))
++   (set (match_operand:SI               3 "register_operand" "=r")
++	(any_div:SI (match_dup 1)
++		    (match_dup 2)))]
++  "TARGET_64BIT"
++  "#"
++  "&& 1"
++  [(set (match_dup 0) (sign_extend:DI
++		       (any_div:SI (match_dup 1) (match_dup 2))))
++   (set (match_dup 3) (match_dup 4))]
++  "operands[4] = gen_lowpart (SImode, operands[0]);"
++  [(set_attr "type" "idiv")
++   (set_attr "mode" "SI")])
++
+ (define_insn "div<mode>3"
+   [(set (match_operand:ANYF           0 "register_operand" "=f")
+ 	(div:ANYF (match_operand:ANYF 1 "register_operand" " f")

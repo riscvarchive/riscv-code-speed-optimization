@@ -1,0 +1,74 @@
+converts
+	lui     a5,%hi(array)
+	addi    a5,a5,%lo(array)
+	add     a0,a5,a0
+        lbu     a0,0(a0)
+into
+        lui     a5,%hi(array)
+        add     a0,a5,a0
+        lbu     a0,%lo(array)(a0)
+fails with linker relaxation, which gives
+   101ac:	00a78533	add	a0,a5,a0
+   101b0:	9981c503	lbu	a0,-1640(gp) # 11ba8 <array>
+needs a solution like the tls 4-operand add relocation/relaxation
+      
+diff --git a/gcc/config/riscv/riscv.c b/gcc/config/riscv/riscv.c
+index 2a8f87d..61e0cf7 100644
+--- a/gcc/config/riscv/riscv.c
++++ b/gcc/config/riscv/riscv.c
+@@ -1245,6 +1245,55 @@ riscv_legitimize_address (rtx x, rtx oldx ATTRIBUTE_UNUSED,
+       return riscv_force_address (addr, mode);
+     }
+ 
++  if (GET_CODE (x) == PLUS)
++    {
++      rtx op0 = XEXP (x, 0);
++      rtx op1 = XEXP (x, 1);
++      rtx addr;
++      rtx lo_sum_op = NULL_RTX;
++      rtx other_op = NULL_RTX;
++
++      /* Catch an expression like (plus (reg) (label_ref:SI 0)) which would
++	 normally be expanded to
++	   lui	a5,%hi(.L4)
++	   addi	a5,a5,%lo(.L4)
++	   add	a0,a0,a5
++	   lw	a5,0(a0)
++	 We instead split out the low part and reorder to get
++	   lui	a5,%hi(.L4)
++	   add	a0,a0,a5
++	   lw	a5,%lo(.L4)(a0)  */
++
++      if (GET_CODE (op0) == LO_SUM)
++	{
++	  lo_sum_op = op0;
++	  other_op = op1;
++	}
++      else if (riscv_split_symbol (NULL, op0, Pmode, &addr))
++	{
++	  lo_sum_op = addr;
++	  other_op = op1;
++	}
++      else if (GET_CODE (op1) == LO_SUM)
++	{
++	  lo_sum_op = op1;
++	  other_op = op0;
++	}
++      else if (riscv_split_symbol (NULL, op1, Pmode, &addr))
++	{
++	  lo_sum_op = addr;
++	  other_op = op0;
++	}
++
++      if (lo_sum_op != NULL_RTX)
++	{
++	  x = force_operand (gen_rtx_PLUS (Pmode, other_op,
++					   XEXP (lo_sum_op, 0)),
++			     NULL_RTX);
++	  x = gen_rtx_LO_SUM (Pmode, x, XEXP (lo_sum_op, 1));
++	}
++   }
++
+   return x;
+ }
+ 

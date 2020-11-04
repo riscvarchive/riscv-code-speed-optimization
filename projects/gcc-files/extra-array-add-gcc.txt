@@ -1,0 +1,114 @@
+updated patch version that tries to add relocs for relaxation
+
+diff --git a/gcc/config/riscv/riscv.c b/gcc/config/riscv/riscv.c
+index 9a9d9e1..b6e7d3b 100644
+--- a/gcc/config/riscv/riscv.c
++++ b/gcc/config/riscv/riscv.c
+@@ -1035,6 +1035,18 @@ static rtx riscv_tls_add_tp_le (rtx dest, rtx base, rtx sym)
+     return gen_tls_add_tp_lesi (dest, base, tp, sym);
+ }
+ 
++/* Add a register to a hi/lo pair.  */
++
++static rtx riscv_gprel_add (rtx dest, rtx addend, rtx lo_sum_op)
++{
++  if (Pmode == DImode)
++    return gen_gprel_adddi (dest, addend, XEXP (lo_sum_op, 0),
++			    XEXP (lo_sum_op, 1));
++  else
++    return gen_gprel_addsi (dest, addend, XEXP (lo_sum_op, 0),
++			    XEXP (lo_sum_op, 1));
++}
++
+ /* If MODE is MAX_MACHINE_MODE, ADDR appears as a move operand, otherwise
+    it appears in a MEM of that mode.  Return true if ADDR is a legitimate
+    constant in that context and can be split into high and low parts.
+@@ -1245,6 +1257,55 @@ riscv_legitimize_address (rtx x, rtx oldx ATTRIBUTE_UNUSED,
+       return riscv_force_address (addr, mode);
+     }
+ 
++  if (GET_CODE (x) == PLUS)
++    {
++      rtx op0 = XEXP (x, 0);
++      rtx op1 = XEXP (x, 1);
++      rtx addr;
++      rtx lo_sum_op = NULL_RTX;
++      rtx other_op = NULL_RTX;
++
++      /* Catch an expression like (plus (reg) (label_ref:SI 0)) which would
++	 normally be expanded to
++	   lui	a5,%hi(.L4)
++	   addi	a5,a5,%lo(.L4)
++	   add	a0,a0,a5
++	   lw	a5,0(a0)
++	 We instead split out the low part and reorder to get
++	   lui	a5,%hi(.L4)
++	   add	a0,a0,a5
++	   lw	a5,%lo(.L4)(a0)  */
++
++      if (GET_CODE (op0) == LO_SUM)
++	{
++	  lo_sum_op = op0;
++	  other_op = op1;
++	}
++      else if (riscv_split_symbol (NULL, op0, Pmode, &addr))
++	{
++	  lo_sum_op = addr;
++	  other_op = op1;
++	}
++      else if (GET_CODE (op1) == LO_SUM)
++	{
++	  lo_sum_op = op1;
++	  other_op = op0;
++	}
++      else if (riscv_split_symbol (NULL, op1, Pmode, &addr))
++	{
++	  lo_sum_op = addr;
++	  other_op = op0;
++	}
++
++      if (lo_sum_op != NULL_RTX)
++	{
++	  rtx dest = gen_reg_rtx (Pmode);
++	  emit_insn (riscv_gprel_add (dest, force_reg (Pmode, other_op),
++				      lo_sum_op));
++	  x = gen_rtx_LO_SUM (Pmode, dest, XEXP (lo_sum_op, 1));
++	}
++   }
++
+   return x;
+ }
+ 
+diff --git a/gcc/config/riscv/riscv.md b/gcc/config/riscv/riscv.md
+index 56fe516..4226b32 100644
+--- a/gcc/config/riscv/riscv.md
++++ b/gcc/config/riscv/riscv.md
+@@ -36,6 +36,9 @@
+   ;; High part of PC-relative address.
+   UNSPEC_AUIPC
+ 
++  ;; For relaxing hi/lo add pairs.
++  UNSPEC_GPREL_ADD
++
+   ;; Floating-point unspecs.
+   UNSPEC_FLT_QUIET
+   UNSPEC_FLE_QUIET
+@@ -1195,6 +1198,18 @@
+   [(set_attr "type" "arith")
+    (set_attr "cannot_copy" "yes")])
+ 
++(define_insn "gprel_add<mode>"
++  [(set (match_operand:P   0 "register_operand" "=r")
++	(unspec:P
++	 [(match_operand:P 1 "register_operand" "r")
++	  (match_operand:P 2 "register_operand" "r")
++	  (match_operand:P 3 "symbolic_operand" "")]
++	 UNSPEC_GPREL_ADD))]
++  ""
++  "add\t%0,%1,%2,%%gprel_add(%3)"
++  [(set_attr "type" "arith")
++   (set_attr "mode" "<MODE>")])
++
+ ;; Instructions for adding the low 12 bits of an address to a register.
+ ;; Operand 2 is the address: riscv_print_operand works out which relocation
+ ;; should be applied.

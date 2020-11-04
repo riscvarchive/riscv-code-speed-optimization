@@ -1,0 +1,8 @@
+# Ignore files if someone follows the steps to generate the example
+demo
+globvars.i
+globvars.o
+globvars.s
+prog.i
+prog.o
+prog.s

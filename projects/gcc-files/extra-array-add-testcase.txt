@@ -1,0 +1,15 @@
+/* Compile with -O to reproduce problem.  */
+char array[8] __attribute__ ((section(".sdata")));
+int filler[100] __attribute__ ((used, section(".sdata")));
+
+int __attribute__ ((noinline))
+sub (int i)
+{
+  return array[i];
+}
+
+int
+main (void)
+{
+  return sub (5);
+}

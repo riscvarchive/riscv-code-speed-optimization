@@ -13,11 +13,12 @@ Some of these may be handled by other groups. Please submit pull requests or iss
 
 == Research
 
-- extension of optimization in the linker
+- link:linker-optimizations.adoc[extension of optimization in the linker]
 - machine learning in the compiler
 
 == Development
 
+- general link:gcc-optmizations.adoc[GCC optimizations]
 - compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
 - machine learning outside the compiler
 - superoptimization

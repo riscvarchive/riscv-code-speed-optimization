@@ -1,0 +1,175 @@
+diff --git a/gcc/config/riscv/predicates.md b/gcc/config/riscv/predicates.md
+index f722881..bce4818 100644
+--- a/gcc/config/riscv/predicates.md
++++ b/gcc/config/riscv/predicates.md
+@@ -51,6 +51,10 @@
+   (and (match_operand 0 "sle_operand")
+        (match_test "INTVAL (op) + 1 != 0")))
+ 
++(define_predicate "sge_operand"
++  (and (match_code "const_int")
++       (match_test "SMALL_OPERAND (INTVAL (op) - 1)")))
++
+ (define_predicate "const_0_operand"
+   (and (match_code "const_int,const_wide_int,const_double,const_vector")
+        (match_test "op == CONST0_RTX (GET_MODE (op))")))
+diff --git a/gcc/config/riscv/riscv.c b/gcc/config/riscv/riscv.c
+index d45b19d..3984a60 100644
+--- a/gcc/config/riscv/riscv.c
++++ b/gcc/config/riscv/riscv.c
+@@ -2041,14 +2041,18 @@ riscv_int_order_operand_ok_p (enum rtx_code code, rtx cmp1)
+ 
+ static bool
+ riscv_canonicalize_int_order_test (enum rtx_code *code, rtx *cmp1,
+-				   machine_mode mode)
++				   machine_mode mode, bool inverted_p)
+ {
+   HOST_WIDE_INT plus_one;
+ 
+   if (riscv_int_order_operand_ok_p (*code, *cmp1))
+     return true;
+ 
+-  if (CONST_INT_P (*cmp1))
++  /* If the adjusted constant is not simple, then it is better to use swapped
++     operands than inverted condition with adjusted operand.  A swapped operand
++     is lui/addi,slt whereas inverted is li,slt,xor which is 2 insn longer.  */
++  if (CONST_INT_P (*cmp1)
++      && (!inverted_p || riscv_integer_cost (UINTVAL (*cmp1) + 1) == 1))
+     switch (*code)
+       {
+       case LE:
+@@ -2074,6 +2078,7 @@ riscv_canonicalize_int_order_test (enum rtx_code *code, rtx *cmp1,
+       default:
+ 	break;
+       }
++
+   return false;
+ }
+ 
+@@ -2092,12 +2097,12 @@ riscv_emit_int_order_test (enum rtx_code code, bool *invert_ptr,
+      If not, try doing the same for the inverse operation.  If that also
+      fails, force CMP1 into a register and try again.  */
+   mode = GET_MODE (cmp0);
+-  if (riscv_canonicalize_int_order_test (&code, &cmp1, mode))
++  if (riscv_canonicalize_int_order_test (&code, &cmp1, mode, false))
+     riscv_emit_binary (code, target, cmp0, cmp1);
+   else
+     {
+       enum rtx_code inv_code = reverse_condition (code);
+-      if (!riscv_canonicalize_int_order_test (&inv_code, &cmp1, mode))
++      if (!riscv_canonicalize_int_order_test (&inv_code, &cmp1, mode, true))
+ 	{
+ 	  cmp1 = force_reg (mode, cmp1);
+ 	  riscv_emit_int_order_test (code, invert_ptr, target, cmp0, cmp1);
+@@ -2158,8 +2163,13 @@ riscv_extend_comparands (rtx_code code, rtx *op0, rtx *op1)
+ 	}
+       else
+ 	{
++	  machine_mode mode = GET_MODE (*op0);
++	  
+ 	  *op0 = gen_rtx_SIGN_EXTEND (word_mode, *op0);
+-	  if (*op1 != const0_rtx)
++	  if (CONST_INT_P (*op1))
++	    *op1 = GEN_INT (trunc_int_for_mode (INTVAL (*op1),
++						GET_MODE (*op0)));
++	  else
+ 	    *op1 = gen_rtx_SIGN_EXTEND (word_mode, *op1);
+ 	}
+     }
+diff --git a/gcc/config/riscv/riscv.md b/gcc/config/riscv/riscv.md
+index 434e064..bed26dc 100644
+--- a/gcc/config/riscv/riscv.md
++++ b/gcc/config/riscv/riscv.md
+@@ -377,6 +377,13 @@
+ 		     (lt "") (ltu "u")
+ 		     (le "") (leu "u")])
+ 
++;; Same as above except capital U.
++(define_code_attr U [(sign_extend "") (zero_extend "U")
++		     (gt "") (gtu "U")
++		     (ge "") (geu "U")
++		     (lt "") (ltu "U")
++		     (le "") (leu "U")])
++
+ ;; <su> is like <u>, but the signed form expands to "s" rather than "".
+ (define_code_attr su [(sign_extend "s") (zero_extend "u")])
+ 
+@@ -2090,6 +2097,78 @@
+   [(set_attr "type" "slt")
+    (set_attr "mode" "<X:MODE>")])
+ 
++;; Allow combine to match slt/xor/sext and change to slt/xor.
++;; But don't accept 0, because that is a single instruction.
++;; ??? We only need one of these patterns.
++(define_split
++  [(set (match_operand:DI            0 "register_operand")
++	(any_gt:DI (match_operand:DI 1 "register_operand")
++		   (match_operand    2 "sle_operand")))]
++  "TARGET_64BIT && operands[2] != const0_rtx"
++  [(set (match_dup 0) (match_op_dup 3 [(match_dup 1) (match_dup 2)]))
++   (set (match_dup 0) (xor:DI (match_dup 0) (const_int 1)))]
++{
++  operands[2] = GEN_INT (INTVAL (operands[2]) + 1);
++  operands[3] = gen_rtx_LT<U> (DImode, operands[1], operands[2]);
++})
++
++;; Allow combine to match slt/xor/sext and change to li/slt.
++;; But don't accept 0, because that is a single instruction.
++;; ??? We only need one of these patterns.
++(define_split
++  [(set (match_operand:DI            0 "register_operand")
++	(any_gt:DI (match_operand:DI 1 "register_operand")
++		   (match_operand    2 "const_arith_operand")))
++   (clobber (match_operand:DI 3 "register_operand"))]
++  "TARGET_64BIT && operands[2] != const0_rtx"
++  [(set (match_dup 3) (match_dup 2))
++   (set (match_dup 0) (match_op_dup 4 [(match_dup 3) (match_dup 1)]))]
++{
++  operands[4] = gen_rtx_LT<U> (DImode, operands[3], operands[1]);
++})
++
++;; Allow combine to match slt/xor/sext and change to slt/xor.
++;; But don't accept 0, because that is a single instruction.
++;; ??? We only need one of these patterns.
++(define_split
++  [(set (match_operand:DI            0 "register_operand")
++	(any_ge:DI (match_operand:DI 1 "register_operand")
++		   (match_operand    2 "const_arith_operand")))]
++  "TARGET_64BIT && operands[2] != const0_rtx"
++  [(set (match_dup 0) (match_op_dup 3 [(match_dup 1) (match_dup 2)]))
++   (set (match_dup 0) (xor:DI (match_dup 0) (const_int 1)))]
++{
++  operands[3] = gen_rtx_LT<U> (DImode, operands[1], operands[2]);
++})
++
++;; Allow combine to match slt/xor/sext and change to li/slt.
++;; But don't accept 0, because that is a single instruction.
++;; ??? We only need one of these patterns.
++(define_split
++  [(set (match_operand:DI            0 "register_operand")
++	(any_ge:DI (match_operand:DI 1 "register_operand")
++		   (match_operand    2 "sge_operand")))
++   (clobber (match_operand:DI 3 "register_operand"))]
++  "TARGET_64BIT && operands[2] != const0_rtx"
++  [(set (match_dup 3) (match_dup 2))
++   (set (match_dup 0) (match_op_dup 4 [(match_dup 3) (match_dup 1)]))]
++{
++  operands[2] = GEN_INT (INTVAL (operands[2]) - 1);
++  operands[4] = gen_rtx_LT<U> (DImode, operands[3], operands[1]);
++})
++
++;; Allow combine to match slt/xor/sext and change to slt/xor.
++(define_split
++  [(set (match_operand:DI            0 "register_operand")
++	(any_ge:DI (match_operand:DI 1 "register_operand")
++		   (match_operand:DI 2 "register_operand")))]
++  "TARGET_64BIT"
++  [(set (match_dup 0) (match_op_dup 3 [(match_dup 1) (match_dup 2)]))
++   (set (match_dup 0) (xor:DI (match_dup 0) (const_int 1)))]
++{
++  operands[3] = gen_rtx_LT<U> (DImode, operands[1], operands[2]);
++})
++
+ ;;
+ ;;  ....................
+ ;;

@@ -1,0 +1,164 @@
+Accept add %hi for eliminable registers, so that when they are eliminated we
+can simplify the arithmetic.
+
+diff --git a/gcc/config/riscv/constraints.md b/gcc/config/riscv/constraints.md
+index ae93788..c7aa350 100644
+--- a/gcc/config/riscv/constraints.md
++++ b/gcc/config/riscv/constraints.md
+@@ -49,6 +49,11 @@
+   (and (match_code "const_int")
+        (match_test "IN_RANGE (ival, 0, 31)")))
+ 
++(define_constraint "L"
++  "A U-type 20-bit signed immediate."
++  (and (match_code "const_int")
++       (match_test "(ival & 0xFFF) == 0")))
++
+ ;; Floating-point constant +0.0, used for FCVT-based moves when FMV is
+ ;; not available in RV32.
+ (define_constraint "G"
+diff --git a/gcc/config/riscv/predicates.md b/gcc/config/riscv/predicates.md
+index 854af14..8559c23 100644
+--- a/gcc/config/riscv/predicates.md
++++ b/gcc/config/riscv/predicates.md
+@@ -27,6 +27,14 @@
+   (ior (match_operand 0 "const_arith_operand")
+        (match_operand 0 "register_operand")))
+ 
++(define_predicate "const_lui_operand"
++  (and (match_code "const_int")
++       (match_test "(INTVAL (op) & 0xFFF) == 0")))
++
++(define_predicate "add_operand"
++  (ior (match_operand 0 "arith_operand")
++       (match_operand 0 "const_lui_operand")))
++
+ (define_predicate "const_csr_operand"
+   (and (match_code "const_int")
+        (match_test "IN_RANGE (INTVAL (op), 0, 31)")))
+@@ -51,6 +59,11 @@
+   (ior (match_operand 0 "const_0_operand")
+        (match_operand 0 "register_operand")))
+ 
++;; For use in adds, when adding to an eliminable register.
++(define_predicate "reg_or_const_int_operand"
++  (ior (match_code "const_int")
++       (match_operand 0 "register_operand")))
++
+ ;; Only use branch-on-bit sequences when the mask is not an ANDI immediate.
+ (define_predicate "branch_on_bit_operand"
+   (and (match_code "const_int")
+diff --git a/gcc/config/riscv/riscv-protos.h b/gcc/config/riscv/riscv-protos.h
+index 9718683..1e381fa 100644
+--- a/gcc/config/riscv/riscv-protos.h
++++ b/gcc/config/riscv/riscv-protos.h
+@@ -63,6 +63,7 @@ extern void riscv_expand_conditional_branch (rtx, enum rtx_code, rtx, rtx);
+ extern rtx riscv_legitimize_call_address (rtx);
+ extern void riscv_set_return_address (rtx, rtx);
+ extern bool riscv_expand_block_move (rtx, rtx, rtx);
++extern bool riscv_eliminable_reg (rtx);
+ extern rtx riscv_return_addr (int, rtx);
+ extern HOST_WIDE_INT riscv_initial_elimination_offset (int, int);
+ extern void riscv_expand_prologue (void);
+diff --git a/gcc/config/riscv/riscv.c b/gcc/config/riscv/riscv.c
+index cb7dbdf..7fea35a 100644
+--- a/gcc/config/riscv/riscv.c
++++ b/gcc/config/riscv/riscv.c
+@@ -3304,6 +3304,16 @@ riscv_initial_elimination_offset (int from, int to)
+   return src - dest;
+ }
+ 
++/* Return true if X is a register that will be eliminated later on.  */
++bool
++riscv_eliminable_reg (rtx x)
++{
++  return REG_P (x) && (REGNO (x) == FRAME_POINTER_REGNUM
++		       || REGNO (x) == ARG_POINTER_REGNUM
++		       || (REGNO (x) >= FIRST_VIRTUAL_REGISTER
++			   && REGNO (x) <= LAST_VIRTUAL_REGISTER));
++}
++
+ /* Implement RETURN_ADDR_RTX.  We do not support moving back to a
+    previous frame.  */
+ 
+diff --git a/gcc/config/riscv/riscv.md b/gcc/config/riscv/riscv.md
+index 7d63d81..1e8953a 100644
+--- a/gcc/config/riscv/riscv.md
++++ b/gcc/config/riscv/riscv.md
+@@ -409,12 +409,56 @@
+   [(set_attr "type" "fadd")
+    (set_attr "mode" "<UNITMODE>")])
+ 
+-(define_insn "addsi3"
+-  [(set (match_operand:SI          0 "register_operand" "=r,r")
+-	(plus:SI (match_operand:SI 1 "register_operand" " r,r")
+-		 (match_operand:SI 2 "arith_operand"    " r,I")))]
++(define_expand "addsi3"
++  [(set (match_operand:SI          0 "register_operand" "")
++	(plus:SI (match_operand:SI 1 "register_operand" "")
++		 (match_operand:SI 2 "reg_or_const_int_operand" "")))]
+   ""
+-  { return TARGET_64BIT ? "add%i2w\t%0,%1,%2" : "add%i2\t%0,%1,%2"; }
++{
++  if (! riscv_eliminable_reg (operands[1]))
++    {
++      if (! const_arith_operand (operands[2], SImode))
++	operands[2] = force_reg (SImode, operands[2]);
++    }
++  else
++    {
++      if (splittable_const_int_operand (operands[2], SImode))
++	{
++	  /* The idea here is that we emit
++	       add op0, op1, %hi(op2)
++	       addi op0, op0, %lo(op2)
++	     Then when op1, the eliminable reg, gets replaced with sp+offset,
++	     we can simplify the constants.  */
++	  HOST_WIDE_INT high_part = CONST_HIGH_PART (INTVAL (operands[2]));
++	  emit_insn (gen_addsi3_internal (operands[0], operands[1],
++					  GEN_INT (high_part)));
++	  operands[1] = operands[0];
++	  operands[2] = GEN_INT (INTVAL (operands[2]) - high_part);
++	}
++      else if (! const_arith_operand (operands[2], SImode))
++	operands[2] = force_reg (SImode, operands[2]);
++    }
++})
++
++(define_insn_and_split "addsi3_internal"
++  [(set (match_operand:SI          0 "register_operand" "=r,r,&r")
++	(plus:SI (match_operand:SI 1 "register_operand" " r,r,r")
++		 (match_operand:SI 2 "add_operand"      " r,I,L")))]
++  ""
++{
++  if (which_alternative == 2)
++    return "#";
++  return TARGET_64BIT ? "add%i2w\t%0,%1,%2" : "add%i2\t%0,%1,%2";
++}
++  "&& reload_completed && const_lui_operand (operands[2], SImode)"
++  [(const_int 0)]
++{
++  if (REGNO (operands[0]) == REGNO (operands[1]))
++    abort ();
++  emit_insn (gen_movsi (operands[0], operands[2]));
++  emit_insn (gen_addsi3_internal (operands[0], operands[0], operands[1]));
++  DONE;
++}
+   [(set_attr "type" "arith")
+    (set_attr "mode" "SI")])
+ 
+diff --git a/gcc/postreload.c b/gcc/postreload.c
+index e721f2f..e2e69f2 100644
+--- a/gcc/postreload.c
++++ b/gcc/postreload.c
+@@ -69,6 +69,10 @@ reload_cse_regs (rtx_insn *first ATTRIBUTE_UNUSED)
+       if (moves_converted)
+ 	reload_combine ();
+       reload_cse_regs_1 ();
++      /* The previous reload_cse_regs_1 call deletes no-op moves, which allows
++	 another reload_combine pass to succeed in cases where previous ones
++	 did not.  */
++      reload_combine ();
+     }
+ }
+ 
