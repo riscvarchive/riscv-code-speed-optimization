@@ -103,11 +103,11 @@ and it should just be
 
 Patch:
 
-- link:gcc-files/sli-opt.txt[]
+- link:gcc-files/slt-opt.txt[]
 
 Test case:
 
-- link:gcc-files/sli-opt-testcase.c
+- link:gcc-files/slt-opt.testcase.c[]
 
 == Eliminate extra array adds
 
@@ -154,13 +154,13 @@ So we need a new relocation, and we need binutils relaxation support to handle t
 
 Patches
 
-- link:gcc-files/extra-array-add-bin.txt
-- link:gcc-files/extra-array-add-gcc.txt
-- link:gcc-files/extra-array-add-patch.txt
+- link:gcc-files/extra-array-add-bin.txt[]
+- link:gcc-files/extra-array-add-gcc.txt[]
+- link:gcc-files/extra-array-add-patch.txt[]
 
 Test case
 
-- link:gcc-files/extra-array-add-testcase.txt
+- link:gcc-files/extra-array-add-testcase.txt[]
 
 == Large stack frame optimization problem
 
@@ -178,7 +178,7 @@ I have a prototype patch.  But I needed a change to a target independent optimiz
 
 Patch
 
-- link:gcc-files/large-frame-hack.txt
+- link:gcc-files/large-frame-hack.txt[]
 
 == `target` attribute and pragma
 

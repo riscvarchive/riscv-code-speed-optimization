@@ -16,7 +16,7 @@ Document conventions:
 
 == Overview
 
-This document is an initial version for discussion prepared by Jeremy Bennett (candidate chair) and Wei Wu (candidate co-chair).  It will be reviewed by the wider group in preparation for ratification by the Technical Steering Committee.
+This document is a draft for review pending final approval by the SIG membership at its meeting on 19 November 2020.  It will then be submitted for ratification by the Technical Steering Committee.
 
 == Scope
 

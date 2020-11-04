@@ -18,7 +18,7 @@ Some of these may be handled by other groups. Please submit pull requests or iss
 
 == Development
 
-- general link:gcc-optmizations.adoc[GCC optimizations]
+- a collection of general RISC-V link:gcc-optimizations.adoc[GCC optimizations]
 - compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
 - machine learning outside the compiler
 - superoptimization
