@@ -1,0 +1,58 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Meeting Agenda =
+Monday 16 November 2020, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Welcome
+
+== Review of actions
+
+* *Mark Himelstein* to advise how to access the free advertising for the commercial ecosystem
+
+** information circulated via the mailing list.
+
+* *Jeremy Bennett* to collect comments on the charter and prepare an updated version for the next weeting.
+
+** complete
+
+* *Jeremy Bennett* to create the candidate project list in GitHub, so it can be updated by pull request and issue submission.
+
+** complete.
+
+* *Jim Wilson* to provide his list of GCC improvements.
+
+** complete.
+
+== Finalize the charter
+
+This meeting will agree the final charter to be submitted to TSG for approval.  link:https://github.com/riscv/riscv-code-speed-optimization/blob/main/charter.adoc[Current text] on GitHub.
+
+== List of candidate projects
+
+The meeting will review the current list of projects and suggest an initial prioritization.  To be prioritizes a project must have an owner to drive it to completion.  This is the link:https://github.com/riscv/riscv-code-speed-optimization/blob/main/projects/candidate-projects.adoc[current list].
+
+The goal is that our next meeting will work the two highest priority of these up to more detail.
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+* Monday 7 December 2020
+* Thereafter first Monday of the month throughout 2021
+
+Mark Himelstein noted we can have more meetings if we need to.
+
+== AOB
+
+None.
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair
