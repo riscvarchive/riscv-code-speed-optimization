@@ -16,7 +16,7 @@ Document conventions:
 
 == Overview
 
-This document is a draft for review pending final approval by the SIG membership at its meeting on 16 November 2020.  It will then be submitted for ratification by the Technical Steering Committee.
+This document has been approved by the SIG membership at its meeting on 16 November 2020.  It awaits ratification by the Technical Steering Committee.
 
 == Scope
 
@@ -60,7 +60,7 @@ The types of proposals we might create are.
 
 3. Areas where processes need creating or improving. I have given an example of a process to establish vendor specific relocations, in order that we can have vendor specific tool chains that are consistent.
 
-For things that are of modest scope and generally of value the work might be commissioned by RISC-V International. However for larger projects we might have an additional role, which is to help formation of industry consortia to commission the work. An example of this might be delivery of optimizing Fortran compiler support in GCC and/or LLVM, something that is critical to the small number of RISC-V International members who are in the HPC space, and which represents tens of engineer years of work over an extended period.
+For things that are of modest scope and generally of value the work might be commissioned by RISC-V International. However for larger projects we might have an additional role, which is to help formation of industry consortia to commission the work. An example of this might be delivery of optimizing Fortran compiler support in GCC and/or LLVM, something that is critical to the small number of RISC-V International members who are in the HPC space, and which represents tens of engineer years of work over an extended period.  Any such consortium formation will be carried out in a completely neutral fashion, following all anti-trust rules.
 
 Some of these areas overlap with other groups, notably the Code Size Reduction SIG (compiler and library issues), the Managed Runtimes SIG (interpreted and JITable languages) and J-extension TG (pointer masking and sandboxing may be overlap areas). We shall communicate regularly with these groups, and agree who will lead on any overlapping issues.
 
@@ -80,5 +80,11 @@ Initial version for discussion.
 Jeremy Bennett |
 
 Draft for review, incorporating comments from initial meeting and pending finalization on 16 November 2020.
+
+| 0.90      | 16 November 2020  |
+
+Jeremy Bennett |
+
+Final version approved by the meeting of 16 November to submit for ratification by TSC.
 
 |================================================================================
