@@ -11,12 +11,30 @@ Document conventions:
 
 Some of these may be handled by other groups. Please submit pull requests or issues to update this list.
 
-== Research
+== Priorities
+
+The following priority list was agreed at the SIG meeting of 16 November 2020, where each person present was asked to choose their top two priorities for projects to work on
+
+[cols="<4,>1",options="header,pagewidth",]
+|=============================================================================
+| _Project_                                                 | _Count_
+| Continuous integration and test, benchmarking and tracing |      8
+| Compiler optimizations for upcoming extensions            |      7
+| Allocation of vendor specific relocations                 |      3
+| GCC optimizations                                         |      2
+| Linker related optimization                               |      2
+| Documentation                                             |      1
+| Making best use of existing optimizations                 |      1
+|=============================================================================
+
+== Candidate projects
+
+=== Research
 
 - link:linker-optimizations.adoc[extension of optimization in the linker]
 - machine learning in the compiler
 
-== Development
+=== Development
 
 - a collection of general RISC-V link:gcc-optimizations.adoc[GCC optimizations]
 - compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
@@ -27,7 +45,7 @@ Some of these may be handled by other groups. Please submit pull requests or iss
 - general optimizations for other compilers
 - `-menable-experimental-extensions` option for GCC
 
-== Process
+=== Process
 
 - FSF copyright assignment in RISC-V mirror repositories
 - allocation of vendor specific linker relocations
