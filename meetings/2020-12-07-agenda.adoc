@@ -1,0 +1,83 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Meeting Agenda =
+Monday 7 December 2020, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Welcome
+
+Attendees are invited to introduce themselves.
+
+== Review of actions
+
+* **Jeremy Bennett.** Clarify wording around faciliating consortia.
+
+** Complete.
+
+* **Jeremy Bennett.** Submit final charter to TWG for ratification.
+
+** Complete.  Note that it is the Software Steering Committee which now ratifies.
+
+* **Jeremy Bennett.** Advise Toolchain & Runtimes SC they need to own the list of software maintained by RISC-V International.
+
+** Complete.
+
+* **Jeremy Bennett.** Update list of potential projects.
+
+** Complete.
+
+* **Jeremy Bennett.** Advise Toolchain & Runtimes SC that they need to track
+    libraries of interest to RISC-V International.
+    ** Complete.
+
+
+== Process
+
+The chair and co-chair will outline the process for developing proposals.  This will involve developing formal requirements and a briefing note.
+
+== Project #1: Continuous integration, testing, trace and benchmarking
+
+The co-chair will lead a discussion of this project, with a view to developing an initial outline proposal for consideration by Toolchain & Runtimes Technical Subcommittee.
+
+== Project #2: Compiler optimizations for upcoming extensions
+
+The chair will lead a discussion of this project, with a view to developing an initial outline proposal for consideration by Toolchain & Runtimes Technical Subcommittee.
+
+== List of candidate projects
+
+Members are invited to consider additional projects to be added to the priority list. This is the link:https://github.com/riscv/riscv-code-speed-optimization/blob/main/projects/candidate-projects.adoc[current list].  The outstanding projects will be prioritized by polling members attending the meeting.
+
+Future meetings will progress current projects and typically consider initiating the next project on the list.
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+* Monday 4 January 2021
+* Monday 1 February 2021
+* Monday 1 March 2021
+* Monday 5 April 2021
+* Monday 3 May 2021
+* Monday 7 June 2021
+* Monday 5 July 2021
+* Monday 2 August 2021
+* Monday 6 September 2021
+* Monday 4 October 2021
+* Monday 1 November 2021
+* Monday 6 December 2021
+
+Subgroups developing project proposals are expected to hold additional meetings open to all between monthly meetings.
+
+== AOB
+
+Members are invited to raise any other items of business.
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair
