@@ -4,9 +4,9 @@
 SPDX-License-Identifier: CC-BY-4.0
 
 Document conventions:
-- one line per paragraph (don't fill lines - this makes changes clearer)
-- Wikipedia heading conventions (First word only capitalized)
-- US spelling throughout.
+* one line per paragraph (don't fill lines - this makes changes clearer)
+* Wikipedia heading conventions (First word only capitalized)
+* US spelling throughout.
 ////
 
 Some of these may be handled by other groups. Please submit pull requests or issues to update this list.
@@ -19,7 +19,7 @@ The following priority list was agreed at the SIG meeting of 16 November 2020, w
 |=============================================================================
 | _Project_                                                 | _Count_
 | Continuous integration and test, benchmarking and tracing |      8
-| Compiler optimizations for upcoming extensions            |      7
+| Compiler/library optimization for `B` extension           |      7
 | Allocation of vendor specific relocations                 |      3
 | GCC optimizations                                         |      2
 | Linker related optimization                               |      2
@@ -31,26 +31,33 @@ The following priority list was agreed at the SIG meeting of 16 November 2020, w
 
 === Research
 
-- link:linker-optimizations.adoc[extension of optimization in the linker]
-- machine learning in the compiler
+* link:linker-optimizations.adoc[extension of optimization in the linker]
+* machine learning in the compiler
 
 === Development
 
-- a collection of general RISC-V link:gcc-optimizations.adoc[GCC optimizations]
-- compiler (GCC/LLVM/IAR) optimization for upcoming extensions (B, V, P, J, etc)
-- machine learning outside the compiler
-- superoptimization
-- compiler support for profiling, including loop level profiling
-- general LLVM optimizations
-- general optimizations for other compilers
-- `-menable-experimental-extensions` option for GCC
+* a collection of general RISC-V link:gcc-optimizations.adoc[GCC optimizations]
+* compiler/library (GCC/LLVM/IAR) optimization for `Zfh` extension
+* compiler/library (GCC/LLVM/IAR) optimization for `B` extension
+* compiler/library (GCC/LLVM/IAR) optimization for `J` extension
+* compiler/library (GCC/LLVM/IAR) optimization for `P` extension
+* compiler/library (GCC/LLVM/IAR) optimization for `V` extension
+* compiler/library (GCC/LLVM/IAR) optimization for `Zfinx` extension
+* machine learning outside the compiler
+* superoptimization
+* compiler support for profiling, including loop level profiling
+* general LLVM optimizations
+* general optimizations for other compilers
+* `-menable-experimental-extensions` option for GCC
+* version of `-msave-restore` optimized for speed
+* optimization for specific applications, e.g. OpenCV, crypto
 
 === Process
 
-- FSF copyright assignment in RISC-V mirror repositories
-- allocation of vendor specific linker relocations
-- ongoing benchmarking (and regressions in benchmarking), including competitive analysis, identifying suitable benchmarks to use and support for tracing
-- determination of baseline code speed benchmarks for each language supported by RISC-V
-- documentation, for example to facilitate writing a scheduler, what can be standardize/parameterized, what are the "hints" in RISC-V documentation
-- buildbot infrastructure for open source CI and measurement (tied into benchmarking and tracing)
-- determine the impact of code density on code speed, including cache impacts
+* FSF copyright assignment in RISC-V mirror repositories
+* allocation of vendor specific linker relocations
+* ongoing benchmarking (and regressions in benchmarking), including competitive analysis, identifying suitable benchmarks to use and support for tracing
+* determination of baseline code speed benchmarks for each language supported by RISC-V
+* documentation, for example to facilitate writing a scheduler, what can be standardize/parameterized, what are the "hints" in RISC-V documentation
+* buildbot infrastructure for open source CI and measurement (tied into benchmarking and tracing)
+* determine the impact of code density on code speed, including cache impacts
