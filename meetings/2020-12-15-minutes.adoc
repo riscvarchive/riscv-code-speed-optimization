@@ -1,0 +1,168 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Meeting Minutes =
+
+Monday 7 December 2020, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Summary of actions
+
+* **Jeremy Bennett** to merge template PRD document into GitHub repository
+* **Wei Wu** to commit his draft PRD to the projects directory of the repository and solicit comments from this group and the wider RISC-V tech group
+* **Wei Wu** to lead a review at 4 January meeting, with a view to submitting to Toolchain & Runtimes committee on 14 January
+* **Jeremy Bennett** to provide an outline PRD for B extension speed optimization for review at the next meeting
+* **Jeremy Bennett** to add individual projects for each extension to the list of candidate projects
+* **Jeremy Bennett** to update list of potential projects
+
+== Welcome
+
+The anti-trust and code of conduct notice were presented.
+
+Attendees introduced themselves.
+
+== Review of actions
+
+* **Jeremy Bennett.** Clarify wording around faciliating consortia.
+
+** Complete.
+
+* **Jeremy Bennett.** Submit final charter to TWG for ratification.
+
+** Complete.  Note that it is the Software Steering Committee which now ratifies.
+
+* **Jeremy Bennett.** Advise Toolchain & Runtimes SC they need to own the list of software maintained by RISC-V International.
+
+** Complete.
+
+* **Jeremy Bennett.** Update list of potential projects.
+
+** Complete.
+
+* **Jeremy Bennett.** Advise Toolchain & Runtimes SC that they need to track
+    libraries of interest to RISC-V International.
+
+** Complete.
+
+== Process
+
+Jeremy Bennett and Wei Wu presented the proposed PRD document to capture the details of a project.
+
+General agreement this is a useful approach. In many ways similar to a grant proposal. Noted that we could always change if the proposal does not meet needs.
+
+**ACTION:** Jeremy Bennett to merge template PRD document into GitHub repository.
+
+== Project #1: Continuous integration, testing, trace and benchmarking
+
+Wei Wu led a discussion of the project proposal. Key points:
+
+* Inspired by https://arewefastyet.com/[arewefastyet.com] website.
+* Phase 1 - set up infrastructure with one compiler, none board and 3 JS benchmarks
+* Phase 2 - add more boards, tool chains and benchmarks
+* Phase 3 - yet more boards, tool chains and libraries, allow RVI members to access and upload their projects
+* Timeline by August 2021, phases are milestones
+
+Questions and comments:
+
+* Currently uses bash scripts, but would be better being OS neutral technology, for example Python.
+
+**ACTION:** Wei Wu to commit his draft PRD to the projects directory of the repository and solicit comments from this group and the wider RISC-V tech group.
+
+**ACTION:** Wei Wu to lead a review at 4 January meeting, with a view to submitting to Toolchain & Runtimes committee on 14 January.
+
+== Project #2: Compiler optimizations for upcoming extensions
+
+Jeremy Bennett led a discussion of the project proposal.  This needs to be a series of projects one for each extension under development.
+
+Status of current extensions, by parent TG:
+
+* Alternative floating point formats TG
+
+** `Zfh` is supported in GCC/binutils in RISC-V repository
+** Posits no support yet
+
+* Bit manipulation TG
+
+** Clang/LLVM experimental support upstream
+** GCC/binutils ports in RISC-V repositories and out-of-tree from various suppliers
+
+* JIT TG
+
+** Support from V8 by PLCT
+** OpenJDK supported
+** Contributions from Huawei, which has been open sourced.
+
+* DSP TG
+
+** Andes have GCC support
+** IAR support at assembler/intrinsic level
+** Question over status of register pairs
+** Note that documentation has many errors in assembler examples
+
+* Vector TG
+
+** Support in RISC-V GCC/binutils repositories
+** Experimental target support upstream in Clang/LLVM, now the primary focus.
+** Two proposals for intrinsics
+
+* `Zfinx` TG
+
+Binutils/GCC/GDB in development by PLCT at Chinese Academy of Sciences
+
+It was agreed that there was little point in putting effort into optimization until the basic tool chain is stable.  This leaves as candidates
+
+* `Zfh` extension
+* B extension
+* J extension
+* V extension
+
+In discussion it was agreed that there was limited opportunity for speedup of the `Zfh` extension, that the J extension of itself was a speedup technology, rather than needing speeding up itself.
+
+The SIG decided that it made more sense to start with optimization of the B extension, since the V extension would be a huge project, and we should establish our credentials with a more tractable project.
+
+**ACTION:** Jeremy Bennett to provide an outline PRD for B extension speed optimization for review at the next meeting.
+
+**ACTION:** Jeremy Bennett to add individual projects for each extension to the list of candidate projects.
+
+== List of candidate projects
+
+It was requested to add the following projects
+
+* optimization for specific applications, e.g OpenCV, crypto
+* a version of `-msave-restore` optimized for speed
+
+**ACTION:** Jeremy Bennett to update list of potential projects.
+
+=== Reprioritization
+
+The meeting ran out of time to reprioritize its list of projects, so this will be considered at the next meeting.
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+* Monday 4 January 2021
+* Monday 1 February 2021
+* Monday 1 March 2021
+* Monday 5 April 2021
+* Monday 3 May 2021
+* Monday 7 June 2021
+* Monday 5 July 2021
+* Monday 2 August 2021
+* Monday 6 September 2021
+* Monday 4 October 2021
+* Monday 1 November 2021
+* Monday 6 December 2021
+
+Subgroups developing project proposals are expected to hold additional meetings open to all between monthly meetings.
+
+== AOB
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair

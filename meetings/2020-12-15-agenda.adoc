@@ -35,7 +35,8 @@ Attendees are invited to introduce themselves.
 
 * **Jeremy Bennett.** Advise Toolchain & Runtimes SC that they need to track
     libraries of interest to RISC-V International.
-    ** Complete.
+
+** Complete.
 
 
 == Process
