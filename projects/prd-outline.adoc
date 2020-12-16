@@ -1,0 +1,112 @@
+= RISC-V Code Speed Optimization Project Requirement Definition Template
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+This is the outline template for developing project proposals
+
+== Overview
+
+=== Scope
+
+Summarize the project and what it is to achieve
+
+=== RISC-V market justification
+
+Why should RISC-V International be driving this project.
+
+=== Document history
+
+[cols="<2,<2,<3,<7",options="header,pagewidth",]
+|================================================================================
+| _Revision_ | _Date_        | _Author_ | _Modification_
+| 0.01       | 2020-12-04   |
+
+Jeremy Bennett,
+Wei Wu |
+
+Initial version for discussion.
+
+|================================================================================
+
+== Requirements
+
+=== Context
+
+Explain the project in sufficient detail for the following sections to make sense.
+
+=== Phasing
+
+Some projects may represent 10s of engineer years of effort over a number of years. In these cases, the project should be broken into a number of phases, lasting 3-6 months.  Each phase should be logically coherent and have meaningful deliverables, such that just completing a single phase is a useful body of work.
+
+Note that is quite usual for the PRD to describe a multi-phase project, but only provide detailed planning for the first phase, with planning the next phase being one of the deliverables of each phase.
+
+=== Outline plan and timescale
+
+The problem must be sufficiently well analysed that it can be planned in sufficient detail to provide meaningful estimates of effort required and likely timescales.
+
+=== Prerequisites
+
+* Equipment needed, and where this can be obtained
+* Skills required by engineers
+* Other prerequisites - for example those working on FSF tools will need FSF copyright agreement in place
+
+=== Deliverables
+
+The outputs of the project.  For projects of any length it is reasonable to have interim deliverables.  The success of the project is measured through its deliverables.
+
+A monthly report to the SIG is a routine deliverables for all projects, which will cover
+- key progress in the past month
+- table showing tasks to be done, in progress, complete and verified
+- test/benchmark results
+- updates to the risk register
+- plans for the next month
+
+=== Milestones
+
+In order to be program managed, the project must have quantifiable milestones.  Typically 1-2 per month.  It is important that the milestones are objectively measurable.
+
+=== Costs
+
+* equipment costs
+* license costs
+* personnel costs
+
+The costs should not be in cash terms, but in terms of equipment required, or engineer months/years of efforts required (and type of engineer required).
+
+== Risk register
+
+Risks are assessed by the Impact (I) they have on the project from 1 (minor) to project killer (3) and by the Likelihood (L) of the risk occurring from 1 (10% chance) through 10 (100% chance).  The two are multiplied to give an overall Risk Factor (R).  Mitigation must be provided for any risk with I = 3 or R >= 10.
+
+[cols="<4,1,1,1,<4",options="header,pagewidth",]
+|=============================================================================
+| _Risk_  | _I_ | _L_ | _R_ | _Mitigation_
+| No silicon available for testing | 2 | 6 | 12 | Use cycle accurate models
+| Too few engineers committed by members |
+
+3 | 2  | 6 |
+
+RISC-V International to fund contract engineers to do the work
+|=============================================================================
+
+The risk register will be maintained on an ongoing basis.
+
+== Support
+
+A project is only useful if members are willing to back it with real resources, which can be in kind or in cash.  Generally a project should only go ahead under the aegis of RISC-V if multiple members are backing it.
+
+Table of member organizations and commitments
+
+[cols="<4,<4,1,1,1",options="header,pagewidth",]
+|=============================================================================
+| _Organization_  | _Commitment_ | _Past_ | _2021_ | _2022_
+| Acme Inc.       | 3 engineer months compiler expertise | | X |
+| Nadir AB        | €50k funding |     |     | X
+| ...             | ...          | ... | ... | ...
+|=============================================================================
