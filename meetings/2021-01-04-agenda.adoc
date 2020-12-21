@@ -1,0 +1,88 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Meeting Agenda =
+Monday 4 January 2021, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Welcome
+
+Attendees are invited to introduce themselves.
+
+== Review of actions
+
+* **Jeremy Bennett** to merge template PRD document into GitHub repository
+
+** Complete.
+
+* **Wei Wu** to commit his draft PRD to the projects directory of the repository and solicit comments from this group and the wider RISC-V tech group
+
+** Wei Wu to report.
+
+* **Wei Wu** to lead a review at 4 January meeting, with a view to submitting to Toolchain & Runtimes committee on 14 January
+
+** See agenda item <<project-1, Project #1>>.
+
+* **Jeremy Bennett** to provide an outline PRD for B extension speed optimization for review at the next meeting
+
+** See agenda item <<project-2, Project #2>>.
+
+* **Jeremy Bennett** to add individual projects for each extension to the list of candidate projects
+
+** Complete.
+
+* **Jeremy Bennett** to update list of potential projects
+
+** Complete.
+
+
+== Report back from Toolchain & Runtime SC
+
+The chair will report back on the Toolchain & Runtime Subcommittee, which has asked for changes to this group's charter.
+
+[[project-1]]
+== Project #1: Continuous integration, testing, trace and benchmarking
+
+The co-chair presented the draft PRD at our previous meeting.  This session will review that proposal for consideration by Toolchain & Runtimes Technical Subcommittee on 14 January 2021.
+
+[[project-2]]
+== Project #2: Compiler optimizations for the bit manipulation extension
+
+The chair will present a draft PRD for consideration. A project lead to develop this proposal fully is sought.
+
+== List of candidate projects
+
+Members are invited to consider additional projects to be added to the priority list. This is the link:https://github.com/riscv/riscv-code-speed-optimization/blob/main/projects/candidate-projects.adoc[current list].  The outstanding projects will be prioritized by polling members attending the meeting.
+
+Future meetings will progress current projects and typically consider initiating the next project on the list.
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+* Monday 1 February 2021
+* Monday 1 March 2021
+* Monday 5 April 2021
+* Monday 3 May 2021
+* Monday 7 June 2021
+* Monday 5 July 2021
+* Monday 2 August 2021
+* Monday 6 September 2021
+* Monday 4 October 2021
+* Monday 1 November 2021
+* Monday 6 December 2021
+
+Subgroups developing project proposals are expected to hold additional meetings open to all between monthly meetings.
+
+== AOB
+
+Members are invited to raise any other items of business.
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair
