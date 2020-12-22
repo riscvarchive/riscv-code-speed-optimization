@@ -23,8 +23,6 @@ Running on physical boards. Get real performance data.
 Targeting GCC, Clang/LLVM, V8, Spidermonkey, OpenJDK, Rust, Golang, and LuaJIT, etc.
 Also targeting OpenBLAS and other important libraries in future.
 Using Both free and commerical Benchmarks.
-A website to show the data points. Using arewefastyet open-source project
-
 
 === RISC-V market justification
 
@@ -44,7 +42,7 @@ So, it is better to put under the umbrella of RISC-V International.
 | _Revision_ | _Date_        | _Author_ | _Modification_
 | 0.1       | 2020-12-15   |
 
-Wei Wu |
+Wei Wu <wuwei2016@iscas.ac.cn>|
 
 Initial version for discussion.
 
@@ -64,32 +62,35 @@ The performance tracking system has these type of objects:
 === Phasing
 
 * Phase 1: set up the infrastructure
-  one compiler (v8), one board (unleashed), three (JS) benchmarks
-  One engineer, in one month. Run the process. Make the website online.
+  - one compiler (v8), one board (unleashed), three (JS) benchmarks
+  - One engineer, in one month. Run the process. Make the website online.
 
 * Phase 2: more toolchains & runtimes, all available open-source benchmarks.
-  Include upsteram GCC, RISC-V GCC, upstream Clang/LLVM
-  Include OpenJDK/HotSpot, OpenJDK/OpenJ9
-  Include Rust
-  Include Go
-  Include mBench and all available open-source benchmarks
+  - Include upsteram GCC, RISC-V GCC, upstream Clang/LLVM
+  - Include OpenJDK/HotSpot, OpenJDK/OpenJ9
+  - Include Rust
+  - Include Go
+  - Include mBench and all available open-source benchmarks
 
 * Phase 3: more physcial boards and libraries
-  Add Hifive Unmatched and other physical boards
-  Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website.
-  Inlcude OpenBLAS and other compute libs.
+  - Add Hifive Unmatched and other physical boards
+  - Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website.
+  - Inlcude OpenBLAS and other compute libs.
 
 === Outline plan and timescale
 
 * Phase 1: 1 engineer. 1 month. Plan: 2021-2-1 ~ 2021-3-1
-    * Leave one month for volunteers. Can start today, although.
+  - Leave one month for volunteers. Can start today, although.
 * Phase 2: 2 engineer. 3 month. Plan: 2021-3-1 ~ 2021-6-1
 * Phase 3: 2 engineer. 2 month[1]. Plan: 2021-6-1 ~ 2021-8-1
-  [1] it depends on the status of hardware.
+  - [1] it depends on the status of hardware.
+* Phase 4: Govern by a Perf Tracking TG.
 
 After the building of infrastructure got done, a Task Group is needed to determine which repo should be added, which benchmark should be imported. and how to analyze and report the performance data we get.
 
 === Prerequisites
+
+Contributors taking this project needs:
 
 * Basic knowledge about performance testing and tuning
 * Basic knowledge about how to establish a website and tuning JS and PHP code.
@@ -126,7 +127,7 @@ I think it is just a small project in the first place so the milestone is the ph
 
 == Risk register
 
-TBD.
+TBD. The PLCT Lab is willing to contribute engineers.
 
 Risks are assessed by the Impact (I) they have on the project from 1 (minor) to project killer (3) and by the Likelihood (L) of the risk occurring from 1 (10% chance) through 10 (100% chance).  The two are multiplied to give an overall Risk Factor (R).  Mitigation must be provided for any risk with I = 3 or R >= 10.
 
