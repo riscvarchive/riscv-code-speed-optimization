@@ -36,7 +36,7 @@ These provide the overarching framework within which we operate.
 
 1. To increase the execution speed of programs running on RISC-V hardware from the smallest microcontroller to the largest HPC systems.
 
-2. To support the development of a thriving commercial ecosystem for RISC-V technology which enhances code speed, both open source and proprietary.
+2. To support the development of a thriving ecosystem for RISC-V technology which enhances code speed, both open source and proprietary.
 
 3. To see any open source code speed technologies from this group incorporated and maintained in their upstream projects
 
@@ -46,7 +46,7 @@ These goals then lead to some metrics
 
 1. Benchmark speeds. We will need to define what benchmarks are appropriate, and since we are looking at systems of all sizes, we shall certainly need many benchmarks.
 
-2. Number of companies offering RISC-V products and services within the remit of this SIG
+2. Number of RISC-V products and services within the remit of this SIG
 
 3. Number of projects originating from this SIG which have been incorporated upstream.
 
