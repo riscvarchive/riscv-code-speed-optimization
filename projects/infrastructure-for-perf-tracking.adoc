@@ -22,7 +22,7 @@ The task group may share the meeting with code speed opt SIG, for the people att
 
 The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteriscs.
 
-We aim to track V8 and OpenJDK project in the fisrt place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, and LuaJIT, etc in future.
+We aim to track V8 and OpenJDK project in the first place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Wasmtime and LuaJIT, etc in future.
 We are also targeting OpenBLAS and other important HPC/AI libraries in future.
 
 === RISC-V market justification
@@ -76,6 +76,7 @@ The performance tracking system has these type of objects:
 * Phase 2: more toolchains & runtimes, all available open-source benchmarks.
   - Include upstream GCC, RISC-V GCC, upstream Clang/LLVM
   - Include OpenJDK/HotSpot, OpenJDK/OpenJ9
+  - Include Wasmtime
   - Include Rust
   - Include Go
   - Include mBench and all available open-source benchmarks
