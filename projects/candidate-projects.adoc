@@ -13,18 +13,25 @@ Some of these may be handled by other groups. Please submit pull requests or iss
 
 == Priorities
 
-The following priority list was agreed at the SIG meeting of 16 November 2020, where each person present was asked to choose their top two priorities for projects to work on
+The following projects are currently in progress
+
+1. Performance Tracking System
+2. Compiler optimization for the B extension
+
+The following priority list for the remaining projects was most recently reviewed at the SIG meeting of 4 January 2020, where each person present was asked to choose their top two priorities for projects to work on
 
 [cols="<4,>1",options="header,pagewidth",]
 |=============================================================================
 | _Project_                                                 | _Count_
-| Continuous integration and test, benchmarking and tracing |      8
-| Compiler/library optimization for `B` extension           |      7
-| Allocation of vendor specific relocations                 |      3
-| GCC optimizations                                         |      2
-| Linker related optimization                               |      2
-| Documentation                                             |      1
-| Making best use of existing optimizations                 |      1
+| Compiler optimization for the V extension                 |      3
+| Generic GCC optimization                                  |      3
+| Profiling                                                 |      3
+| Superoptimization                                         |      3
+| Application specific optimizations (esp OpenCV)           |      1
+| Generic LLVM optimization                                 |      1
+| Glibc optimizaton                                         |      1
+| Linker optimization                                       |      1
+| Machine learning optimizations                            |      1
 |=============================================================================
 
 == Candidate projects
@@ -33,6 +40,7 @@ The following priority list was agreed at the SIG meeting of 16 November 2020, w
 
 * link:linker-optimizations.adoc[extension of optimization in the linker]
 * machine learning in the compiler
+* characterizing what optimizations are RISC-V specific
 
 === Development
 
@@ -50,7 +58,12 @@ The following priority list was agreed at the SIG meeting of 16 November 2020, w
 * general optimizations for other compilers
 * `-menable-experimental-extensions` option for GCC
 * version of `-msave-restore` optimized for speed
+* compiler//library optimization for the V8 run-time environment
+* compiler//library optimization for the OpenJDK run-time environment
+* compiler//library optimization for the SpiderMonkey run-time environment
 * optimization for specific applications, e.g. OpenCV, crypto
+* trace for optimization
+* Glibc optimization
 
 === Process
 

@@ -1,0 +1,169 @@
+:leveloffset: 1
+= RISC-V Code Speed Optimization SIG Meeting Minutes =
+
+Monday 4 January 2021, 07:00 Pacific Time
+
+////
+SPDX-License-Identifier: CC-BY-4.0
+
+Document conventions:
+- one line per paragraph (don't fill lines - this makes changes clearer)
+- Wikipedia heading conventions (First word only capitalized)
+- US spelling throughout.
+////
+
+== Summary of actions
+
+* **All** to propose wording to indicate this SIG's welcome for contributions from academia for consideration at the next SIG meeting.
+
+* **Wei Wu** to commit the final version of the Performance Tracking System PRD to the projects directory of the repository and submit to the next meeting of Toolchain & Runtimes committee on 14 January, so that a task group can be created to execute the project.
+
+* **Jeremy Bennett** to add Trace back to the list of candidate projects.
+
+* **Jeremy Bennett** to update the list of candidate projects with new projects and priorities.
+
+== Welcome
+
+The anti-trust and code of conduct notice were presented.
+
+Attendees introduced themselves and agreed nem. con. that the minutes should record the list of attendees.
+
+* Erin Olson, Seagate, wants to learn about optimization
+* Evandro Menezes, Co-chair T&R
+* Jim Wilson, GCC guy at SiFive
+* Allen Baum, observing, Chair of arch test group
+* Lu Yahan, PLCT lab, Chinese Academy of Sciences
+* Mark Seligman, HPC compiler developer, individual method
+* Max Ma, compiler engineer SiFive, focus on LLVM
+* Michael Wong, CodePlay, ISO C++ commmittee, ex compiler optimization person
+* Mehmet Oguz Derin, undergraduate in mathematics, interested in computer graphics
+* Ren Guo, Kernel developer, Alibaba T-Head
+* Wei Wu, PLCT lab, Chinese Academy of Sciences, Co-chair
+* Jeremy Bennett, Embecosm, open source tool chain, operating system and modeling, chair
+
+== Review of actions
+
+* **Jeremy Bennett** to merge template PRD document into GitHub repository
+
+** Complete.
+
+* **Wei Wu** to commit his draft PRD to the projects directory of the repository and solicit comments from this group and the wider RISC-V tech group
+
+** Complete.
+
+* **Wei Wu** to lead a review at 4 January meeting, with a view to submitting to Toolchain & Runtimes committee on 14 January
+
+** See agenda item <<project-1, Project #1>>.
+
+* **Jeremy Bennett** to provide an outline PRD for B extension speed optimization for review at the next meeting
+
+** See agenda item <<project-2, Project #2>>.
+
+* **Jeremy Bennett** to add individual projects for each extension to the list of candidate projects
+
+** Complete.
+
+* **Jeremy Bennett** to update list of potential projects
+
+** Complete.
+
+== Report back from Toolchain & Runtime SC
+
+Jeremy Bennett attended the meeting on 17 December 2021.
+
+The SIG was asked to extend its charter to indicate that contributions from the academic community were welcome.
+
+**ACTION:** All to propose wording to indicate this SIG's welcome for contributions from academia for consideration at the next SIG meeting.
+
+
+[[project-1]]
+== Project #1: Performance Tracking System
+
+Wei Wu led a discussion of the final draft project proposal pending submission to Toolchain and Runtimes Subcommittee to create a TG to run this project. Key points:
+
+* The scope should include functional languages such as Haskell and OCaml which are important to the academic community.
+
+* This project only covers bencmarking.  The original scope included continuous integration, trace and functional testing to go into a separate project.
+
+** Allen Baum's new group is likely to have responsibility for functional testing - out of scope for this group.
+
+** There is a separate group looking at continuous integraion - out of scope fro this group.
+
+* The importance of testing many different boards was emphasized.
+
+* Question was raised of whether to use docker images to improve reproducibility.  Something for the task group to sort out.
+
+* The project needs more benchmarks than just Embench, such as SPEC CPU 2006 (licensing challenges). What about SPEC 2000 (quicker to run) - still relevant, but same licensing issues. Embench IoT suite is appropriate for small microncontrollers. What about Linpack and HPCG for the HPC community?  Needs to be a generic framework, so can include new benchmarks as they ecome available.
+
+* What about OS specific benchmarking? Need to include benchmarks of this sort in the performance tracking system.
+
+* Note that scope of original project included continuous integration, trace and functional test. Continuous integration and functional test are the responsibilty of other groups, but we should add trace back in to the list of projects.
+
+The group agreed to support submission to Toolchain and Runtimes SC nem. con.
+
+**ACTION:** Wei Wu to commit the final version of the Performance Tracking System PRD to the projects directory of the repository and submit to the next meeting of Toolchain & Runtimes committee on 14 January, so that a task group can be created to execute the project.
+
+**ACTION:** Jeremy Bennett to add Trace back to the list of candidate projects.
+
+[[project-2]]
+== Project #2: Compiler optimizations for the bit manipulation extension
+
+This item was deferred to a subsequent meeting due to lack of time.
+
+== List of candidate projects
+
+Add the following:
+
+* optimization for different run-time environments: Eg. V8, OpenJDK, SpiderMonkey
+
+* Glibc optimizaton
+
+* Characterizing what optimizations are RISC-V specific
+
+=== Reprioritization
+
+The top two priorities are establised:
+
+1. Performance Tracking System
+2. Compiler optimization for the B extension
+
+A poll of those present established the following priority for future projects (up to 2 votes each).
+
+[cols="<4,>1",options="header,pagewidth",]
+|=============================================================================
+| _Project_                                                 | _Count_
+| Compiler optimization for the V extension                 |      3
+| Generic GCC optimization                                  |      3
+| Profiling                                                 |      3
+| Superoptimization                                         |      3
+| Application specific optimizations (esp OpenCV)           |      1
+| Generic LLVM optimization                                 |      1
+| Glibc optimizaton                                         |      1
+| Linker optimization                                       |      1
+| Machine learning optimizations                            |      1
+|=============================================================================
+
+**ACTION:** Jeremy Bennett to update the list of candidate projects with new projects and priorities.
+
+== Dates of future meetings
+
+The group meets at 07:00 Pacific Time
+
+* Monday 1 February 2021
+* Monday 1 March 2021
+* Monday 5 April 2021
+* Monday 3 May 2021
+* Monday 7 June 2021
+* Monday 5 July 2021
+* Monday 2 August 2021
+* Monday 6 September 2021
+* Monday 4 October 2021
+* Monday 1 November 2021
+* Monday 6 December 2021
+
+Subgroups developing project proposals are expected to hold additional meetings open to all between monthly meetings.
+
+== AOB
+
+Jeremy Bennett, Candidate Chair +
+Wei Wu, Candidate Co-chair
