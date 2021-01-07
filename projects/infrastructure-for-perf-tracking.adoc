@@ -168,5 +168,5 @@ Table of member organizations and commitments
 | _Organization_  | _Commitment_ | _Past_ | _2021_ | _2022_
 | PLCT Lab.       | 12 engineer months compiler expertise; VM for website; hardware | X | X | X
 | StarFive        | Hardware: Hifive Unleashed; Unmatched; | X | X | TBD
-| ...             | ...          | ... | ... | ...
+| ICT, CAS        | Open Source RISC-V Core & FPGA emulation platform  | N/A | X | X
 |=============================================================================
