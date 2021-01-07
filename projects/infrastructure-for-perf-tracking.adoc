@@ -22,7 +22,8 @@ The task group may share the meeting with code speed opt SIG, for the people att
 
 The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteriscs.
 
-We aim to track V8 and OpenJDK project in the first place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Wasmtime and LuaJIT, etc in future.
+We aim to track V8 and OpenJDK project in the fisrt place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Haskell, OCaml, Wasmtime and LuaJIT, etc in near future.
+
 We are also targeting OpenBLAS and other important HPC/AI libraries in future.
 
 === RISC-V market justification
@@ -64,7 +65,7 @@ The performance tracking system has these type of objects:
 
 * the repo we care about. Currently has GCC, LLVM, V8, OpenJDK, OpenBLAS.
 * the hardware/machine we care about. Currently has Hifive Unleashed.
-* the benchmarks we want to measure. Currently we have SunSpider/Octane/Kraken for JavaScript, SPECjvm98 for OpenJDK, and mBench for GCC/Clang.
+* the benchmarks we want to measure. Currently we have SunSpider/Octane/Kraken for JavaScript, SPECjvm98 for OpenJDK, and Embench for GCC/Clang.
 * the combinations of building configs and running configs for the compilers/libs we wan to track.
 
 === Phasing
@@ -76,14 +77,13 @@ The performance tracking system has these type of objects:
 * Phase 2: more toolchains & runtimes, all available open-source benchmarks.
   - Include upstream GCC, RISC-V GCC, upstream Clang/LLVM
   - Include OpenJDK/HotSpot, OpenJDK/OpenJ9
-  - Include Wasmtime
-  - Include Rust
-  - Include Go
-  - Include mBench and all available open-source benchmarks
+  - Include Rust, Golang, and Wasmtime
+  - Include Embench and all available open-source benchmarks
 
-* Phase 3: more physcial boards and libraries
-  - Add Hifive Unmatched and other physical boards
-  - Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website.
+* Phase 3: more compilers, runtimes, physcial boards and libraries
+  - Add Hifive Unmatched and other physical boards, like Alibaba, etc.
+  - Add more compilers & runtimes for academic and domain specific languages, like Haskell, OCaml, Julia, R, etc.
+  - Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website. (The idea is much like the submitting process of spec.org )
   - Inlcude OpenBLAS and other compute libs.
 
 === Outline plan and timescale
@@ -114,7 +114,7 @@ Contributors taking this project needs:
 * Potential optimization opportunites and regressions uncovered by the PTS.
 * Annual progrss report of all the compilers, runtimes, libraries under the tracking of the PTS.
 
-A (bi-)monthly report to the SIG is a routine deliverables for all projects, which will cover
+A monthly report to the SIG is a routine deliverables for all projects, which will cover
 - key progress in the past month
 - table showing tasks to be done, in progress, complete and verified
 - test/benchmark results
@@ -167,5 +167,6 @@ Table of member organizations and commitments
 |=============================================================================
 | _Organization_  | _Commitment_ | _Past_ | _2021_ | _2022_
 | PLCT Lab.       | 12 engineer months compiler expertise; VM for website; hardware | X | X | X
+| StarFive        | Hardware: Hifive Unleashed; Unmatched; | X | X | TBD
 | ...             | ...          | ... | ... | ...
 |=============================================================================
