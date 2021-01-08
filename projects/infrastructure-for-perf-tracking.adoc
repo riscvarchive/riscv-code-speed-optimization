@@ -169,4 +169,5 @@ Table of member organizations and commitments
 | PLCT Lab.       | 12 engineer months compiler expertise; VM for website; hardware | X | X | X
 | StarFive        | Hardware: Hifive Unleashed; Unmatched; | X | X | TBD
 | ICT, CAS        | Open Source RISC-V Core & FPGA emulation platform  | N/A | X | X
+| Nuclei System Technology        | Nuclei DDR 200T FPGA Evaluation Board, Supporting Nuclei 200/300/600/900  | N/A | X | X
 |=============================================================================
