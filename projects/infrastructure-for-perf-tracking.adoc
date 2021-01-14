@@ -1,4 +1,3 @@
-
 = The Performance Tracking System (PTS), and a Task Group for it
 ////
 SPDX-License-Identifier: CC-BY-4.0
@@ -13,16 +12,16 @@ Document conventions:
 
 === Scope
 
-The propoal aim to build a performance tracking system (PTS) for V8, OpenJDK, and other performance critical open source software in RISC-V ecosystem.
+The proposal aims to build a performance tracking system (PTS) for V8, OpenJDK, and other performance critical open source software in the RISC-V ecosystem.
 The system includes a set of scripts for building the softwares we care about and running benchmarks, a farm of machines (hardwares), and a website to show the performance data.
 The idea and implementation are based on the arewefastyet open-source project originated from Mozilla.
 
-After the system set up, we may need a task group for determining which hardware, which software, which benchmarks should be added into the system.
+After the system is set up, we may need a task group for determining which hardware, which software, which benchmarks should be added into the system.
 The task group may share the meeting with code speed opt SIG, for the people attending the two groups are almost the same.
 
-The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteriscs.
+The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteristics.
 
-We aim to track V8 and OpenJDK project in the fisrt place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Haskell, OCaml, Wasmtime and LuaJIT, etc in near future.
+We aim to track V8 and OpenJDK projects in the first place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Haskell, OCaml, Wasmtime and LuaJIT, etc in near future.
 
 We are also targeting OpenBLAS and other important HPC/AI libraries in future.
 
@@ -34,22 +33,22 @@ Java speed on RV was ~100x slower than x86/Arm w/o JIT.
 V8 and other runtimes w/ JITs are under optimized for RISC-V.
 GCC and Clang still have huge potential to improve.
 It is important to know where we are, how far can we achieve.
-We need a platform to tracking the oppotunities and measure our progress.
-It is kind of public goods, lighthouse for toolchains & runtimes & libs.
+We need a platform to track the opportunities and measure our progress.
+It is a kind of public goods, lighthouse for toolchains & runtimes & libs.
 So, it is better to put under the umbrella of RISC-V International.
 
 === Document history
 
 [cols="<2,<2,<3,<7",options="header,pagewidth",]
 |================================================================================
-| _Revision_ | _Date_        | _Author_ | _Modification_
-| 0.2       | 2021-1-3   |
+| _Revision_ | _Date_        | _Author_ | _Modification_
+| 0.2       | 2021-01-03   |
 
 Wei Wu <wuwei2016@iscas.ac.cn>|
 
 Update the proposal after meeting 2020-12-17.
 
-| 0.1       | 2020-12-15   |
+| 0.1       | 2020-12-15   |
 
 Wei Wu <wuwei2016@iscas.ac.cn>|
 
@@ -71,28 +70,28 @@ The performance tracking system has these type of objects:
 === Phasing
 
 * Phase 1: set up the infrastructure
-  - one compiler (v8), one board (unleashed), three (JS) benchmarks
-  - One engineer, in one month. Run the process. Make the website online.
+  - one compiler (v8), one board (unleashed), three (JS) benchmarks
+  - One engineer, in one month. Run the process. Make the website online.
 
 * Phase 2: more toolchains & runtimes, all available open-source benchmarks.
-  - Include upstream GCC, RISC-V GCC, upstream Clang/LLVM
-  - Include OpenJDK/HotSpot, OpenJDK/OpenJ9
-  - Include Rust, Golang, and Wasmtime
-  - Include Embench and all available open-source benchmarks
+  - Include upstream GCC, RISC-V GCC, upstream Clang/LLVM
+  - Include OpenJDK/HotSpot, OpenJDK/OpenJ9
+  - Include Rust, Golang, and Wasmtime
+  - Include Embench and all available open-source benchmarks
 
-* Phase 3: more compilers, runtimes, physcial boards and libraries
-  - Add Hifive Unmatched and other physical boards, like Alibaba, etc.
-  - Add more compilers & runtimes for academic and domain specific languages, like Haskell, OCaml, Julia, R, etc.
-  - Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website. (The idea is much like the submitting process of spec.org )
-  - Inlcude OpenBLAS and other compute libs.
+* Phase 3: more compilers, runtimes, physical boards and libraries
+  - Add Hifive Unmatched and other physical boards, like Alibaba, etc.
+  - Add more compilers & runtimes for academic and domain specific languages, like Haskell, OCaml, Julia, R, etc.
+  - Set up APIs or processes to let RVI members run the scripts on their own devices and upload to the platform/website. (The idea is much like the submitting process of spec.org )
+  - Include OpenBLAS and other compute libs.
 
 === Outline plan and timescale
 
 * Phase 1: 1 engineer. 1 month. Plan: 2021-2-1 ~ 2021-3-1
-  - Leave one month for volunteers. Can start today, although.
+  - Leave one month for volunteers. Can start today though.
 * Phase 2: 2 engineer. 3 month. Plan: 2021-3-1 ~ 2021-6-1
 * Phase 3: 2 engineer. 2 month[1]. Plan: 2021-6-1 ~ 2021-8-1
-  - [1] it depends on the status of hardware.
+  - [1] it depends on the status of hardware.
 * Phase 4: Govern by a Perf Tracking TG.
 
 After the building of infrastructure got done, a Task Group is needed to determine which repo should be added, which benchmark should be imported. and how to analyze and report the performance data we get.
@@ -110,9 +109,9 @@ Contributors taking this project needs:
 
 === Deliverables
 
-* An open-source toolset for building compilers & running benchmarks & show perf results on web.
-* Potential optimization opportunites and regressions uncovered by the PTS.
-* Annual progrss report of all the compilers, runtimes, libraries under the tracking of the PTS.
+* An open-source toolset for building compilers & running benchmarks & showing perf results on the web.
+* Potential optimization opportunities and regressions uncovered by the PTS.
+* Annual progress report of all the compilers, runtimes, libraries under the tracking of the PTS.
 
 A monthly report to the SIG is a routine deliverables for all projects, which will cover
 - key progress in the past month
@@ -128,27 +127,27 @@ It is a small project in the first place so the milestone is the phase stage its
 === Costs
 
 * equipment costs
-  - Plan to get add physical boards donated by the member companies which made them.
-  - An VPS/IaaS for hosting the website. PLCT has existing VPS and can donate for it.
+  - Plan to get more physical boards donated by the member companies which made them.
+  - An VPS/IaaS for hosting the website. PLCT has an existing VPS and can donate it.
 * license costs
-  - Use free & open benchmark first.
-  - The non-free benchmarks are under investigation. How to donate? Is it possible? (due the LINCENSE of each benchmarks)
+  - Use free & open benchmark first.
+  - The non-free benchmarks are under investigation. How to donate? Is it possible? (due the LICENSE of each benchmark)
 * personnel costs
-  - In the first phase a professional engineer might need 80 hours to get all things done.
-  - After the website and hardware farm established, roughly one engineer one day (8 hours) per week.
+  - In the first phase a professional engineer might need 80 hours to get all things done.
+  - After the website and hardware farm are established, roughly one engineer one day (8 hours) per week.
 
 == Risk register
 
 TBD. The PLCT Lab is willing to contribute engineers.
 
-Risks are assessed by the Impact (I) they have on the project from 1 (minor) to project killer (3) and by the Likelihood (L) of the risk occurring from 1 (10% chance) through 10 (100% chance).  The two are multiplied to give an overall Risk Factor (R).  Mitigation must be provided for any risk with I = 3 or R >= 10.
+Risks are assessed by the Impact (I) they have on the project from 1 (minor) to project killer (3) and by the Likelihood (L) of the risk occurring from 1 (10% chance) through 10 (100% chance).  The two are multiplied to give an overall Risk Factor (R).  Mitigation must be provided for any risk with I = 3 or R >= 10.
 
 [cols="<4,1,1,1,<4",options="header,pagewidth",]
 |=============================================================================
-| _Risk_  | _I_ | _L_ | _R_ | _Mitigation_
+| _Risk_  | _I_ | _L_ | _R_ | _Mitigation_
 | No silicon available for testing | 3 | 2 | 6 | Use cycle accurate models. Persuading more companies to donate.
-| Too few engineers committed by members | 3 | 1  | 6 | RISC-V International to fund contract engineers to do the work.
-| Too slow progress made by the projects under tracking | 1 | 8  | 8 | Raise this status to software SC or TSC/CTO.
+| Too few engineers committed by members | 3 | 1  | 6 | RISC-V International to fund contract engineers to do the work.
+| Too slow progress made by the projects under tracking | 1 | 8  | 8 | Raise this status to software SC or TSC/CTO.
 |=============================================================================
 
 The risk register will be maintained on an ongoing basis.
@@ -156,18 +155,18 @@ The risk register will be maintained on an ongoing basis.
 == Support
 
 * Physical boards are needed.
-  - Especially the boards that can run Linux are welcome.
+  - Especially the boards that can run Linux are welcome.
 * Members can run scripts in their own boards and upload the data.
-* Need commercial toolchains & runtimes run the scripts and send back the performance data to the tracking platform.
+* Need commercial toolchains & runtimes to run the scripts and send back the performance data to the tracking platform.
 
 
 Table of member organizations and commitments
 
 [cols="<4,<4,1,1,1",options="header,pagewidth",]
 |=============================================================================
-| _Organization_  | _Commitment_ | _Past_ | _2021_ | _2022_
-| PLCT Lab.       | 12 engineer months compiler expertise; VM for website; hardware | X | X | X
-| StarFive        | Hardware: Hifive Unleashed; Unmatched; | X | X | TBD
-| ICT, CAS        | Open Source RISC-V Core & FPGA emulation platform  | N/A | X | X
-| Nuclei System Technology        | Nuclei DDR 200T FPGA Evaluation Board, Supporting Nuclei 200/300/600/900  | N/A | X | X
+| _Organization_  | _Commitment_ | _Past_ | _2021_ | _2022_
+| PLCT Lab.       | 12 engineer months compiler expertise; VM for website; hardware | X | X | X
+| StarFive        | Hardware: Hifive Unleashed; Unmatched; | X | X | TBD
+| ICT, CAS        | Open Source RISC-V Core & FPGA emulation platform  | N/A | X | X
+| Nuclei System Technology        | Nuclei DDR 200T FPGA Evaluation Board, Supporting Nuclei 200/300/600/900  | N/A | X | X
 |=============================================================================
