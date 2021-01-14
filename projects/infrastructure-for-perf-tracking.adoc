@@ -19,7 +19,7 @@ The idea and implementation are based on the arewefastyet open-source project or
 After the system is set up, we may need a task group for determining which hardware, which software, which benchmarks should be added into the system.
 The task group may share the meeting with code speed opt SIG, for the people attending the two groups are almost the same.
 
-The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteris.
+The main difference of the perf tracking system and general/upstream CI/CD system is that the PTS is focusing on getting real performance data, hence it should always run on physical hardware, and different hardware has different performance characteristics.
 
 We aim to track V8 and OpenJDK projects in the first place, and include GCC, Clang/LLVM, Spidermonkey, Rust, Golang, Haskell, OCaml, Wasmtime and LuaJIT, etc in near future.
 
